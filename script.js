@@ -111,7 +111,10 @@ function performRaffle() {
     const winners = participants.slice(0, drawCount);
     participants = participants.slice(drawCount);
     winnersHistory[tier.name].push(...winners);
-       saveToSheet(winners, tier.name);
+    
+    // บันทึกลง Sheet ทันทีที่สุ่มเสร็จ
+    saveToSheet(winners, tier.name);
+    
     showResults(winners, tier);
 }
 
@@ -154,7 +157,7 @@ function closeResult() {
 function nextRound() { closeResult(); currentTier++; updateUI(); }
 
 function resetGame() {
-    location.reload(); // วิธี Reset ที่สะอาดที่สุด
+    location.reload(); 
 }
 
 /* --- 4. History & Copy System --- */
@@ -195,7 +198,7 @@ function toggleHistory() {
             tabsHtml += `</div>`;
             contentHtml += `</div>`;
 
-           // ✅ เพิ่มช่องค้นหา (Search Bar)
+            // ✅ Search Bar
             const searchHtml = `
                 <div style="padding: 10px 20px; text-align: center;">
                     <input type="text" id="historySearchInput" onkeyup="filterHistory()" placeholder="🔍 พิมพ์ชื่อเพื่อค้นหา..." 
@@ -220,7 +223,7 @@ function initDragScroll() {
     slider.addEventListener('mousemove', (e) => { if (!isDown) return; e.preventDefault(); const x = e.pageX - slider.offsetLeft; const walk = (x - startX) * 2; slider.scrollLeft = scrollLeft - walk; });
 }
 
-window.switchTab = function(event, tabId) {                                                      
+window.switchTab = function(event, tabId) {                                                    
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     event.currentTarget.classList.add('active');
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -255,51 +258,116 @@ function copyToClipboard(rankName) {
 const canvas = document.getElementById('starCanvas');
 const ctx = canvas.getContext('2d');
 let w, h, stars = [], planets = [];
-function resize() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
-window.addEventListener('resize', resize); resize();
 
+function resize() { 
+    w = canvas.width = window.innerWidth; 
+    h = canvas.height = window.innerHeight; 
+}
+window.addEventListener('resize', resize); 
+resize();
+
+/* --- Class ดาวฤกษ์ (เส้นๆ) --- */
 class Star {
     constructor() { this.reset(); }
-    reset() { this.x = (Math.random() - 0.5) * w * 2; this.y = (Math.random() - 0.5) * h * 2; this.z = Math.random() * w; this.pz = this.z; }
-    update() { this.z -= isWarping ? 80 : 2; if (this.z < 1) { this.reset(); this.z = w; this.pz = this.z; } }
+    reset() { 
+        this.x = (Math.random() - 0.5) * w * 2; 
+        this.y = (Math.random() - 0.5) * h * 2; 
+        this.z = Math.random() * w; 
+        this.pz = this.z; 
+    }
+    update() { 
+        this.z -= isWarping ? 80 : 2; 
+        if (this.z < 1) { 
+            this.reset(); 
+            this.z = w; 
+            this.pz = this.z; 
+        } 
+    }
     draw() {
-        let sx = (this.x / this.z) * w + w / 2; let sy = (this.y / this.z) * h + h / 2;
-        let px = (this.x / this.pz) * w + w / 2; let py = (this.y / this.pz) * h + h / 2;
-        this.pz = this.z; let r = (1 - this.z / w) * 3;
-        ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(sx, sy);
+        let sx = (this.x / this.z) * w + w / 2; 
+        let sy = (this.y / this.z) * h + h / 2;
+        let px = (this.x / this.pz) * w + w / 2; 
+        let py = (this.y / this.pz) * h + h / 2;
+        this.pz = this.z; 
+        let r = (1 - this.z / w) * 3;
+        ctx.beginPath(); 
+        ctx.moveTo(px, py); 
+        ctx.lineTo(sx, sy);
         ctx.strokeStyle = isWarping ? starColor : "rgba(255,255,255,0.4)";
-        ctx.lineWidth = isWarping ? r : r / 2; ctx.stroke();
+        ctx.lineWidth = isWarping ? r : r / 2; 
+        ctx.stroke();
     }
 }
-for(let i=0; i<2000; i++) stars.push(new Star());
+
+/* --- Class ดาวเคราะห์ (วงกลมสีๆ) --- */
+class Planet {
+    constructor() { this.reset(); }
+    reset() {
+        this.x = (Math.random() - 0.5) * w * 2;
+        this.y = (Math.random() - 0.5) * h * 2;
+        this.z = w + Math.random() * w; 
+        this.size = Math.random() * 30 + 10; 
+        const colors = ["#ff6b6b", "#4ecdc4", "#ffe66d", "#1a535c", "#f7fff7", "#ff9ff3", "#feca57"];
+        this.color = colors[Math.floor(Math.random() * colors.length)];
+    }
+    update() {
+        this.z -= isWarping ? 60 : 1.5; 
+        if (this.z < 1) {
+            this.reset();
+            this.z = w + 500; 
+        }
+    }
+    draw() {
+        let sx = (this.x / this.z) * w + w / 2;
+        let sy = (this.y / this.z) * h + h / 2;
+        let r = (1 - this.z / w) * this.size;
+        if (r < 0) r = 0; 
+        
+        ctx.beginPath();
+        ctx.arc(sx, sy, r, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.globalAlpha = isWarping ? 0.8 : 0.4; 
+        ctx.fill();
+        ctx.globalAlpha = 1.0; 
+    }
+}
+
+/* --- สร้างดาวและเริ่ม Animate --- */
+stars = [];
+planets = []; 
+for(let i=0; i<3000; i++) stars.push(new Star());
+for(let i=0; i<15; i++) planets.push(new Planet()); 
 
 function animate() {
-    ctx.fillStyle = "#0c0c10"; ctx.fillRect(0, 0, w, h);
+    ctx.fillStyle = "#0c0c10"; 
+    ctx.fillRect(0, 0, w, h);
+    
+    // วาดดาวฤกษ์
     stars.forEach(s => { s.update(); s.draw(); });
+    
+    // วาดดาวเคราะห์ 
+    planets.forEach(p => { p.update(); p.draw(); });
+
     requestAnimationFrame(animate);
 }
 
-// ⚠️ เอา Web App URL ที่ได้จากข้อ 1 มาใส่ตรงนี้
+// ⚠️ Google Script URL (ของคุณถูกต้องแล้ว)
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby_BJhSpOljb4B0rgocuzrV-ehaiL9Tq5yCWkJcAFiL85cGYUTGb5RF7jvczH99B7Ie0g/exec"; 
 
 function saveToSheet(winners, rankName) {
-    // แปลงข้อมูลให้อยู่ในรูปแบบที่ Script เราเข้าใจ
     const dataToSend = {
         rank: rankName,
         winners: winners.map(w => ({
-            id: w[headers[0]] || "-",   // อิงตามหัวตารางคอลัมน์แรก
-            name: w[headers[1]] || "-", // อิงตามหัวตารางคอลัมน์สอง
-            dept: w[headers[2]] || "-"  // อิงตามหัวตารางคอลัมน์สาม
+            id: w[headers[0]] || "-", 
+            name: w[headers[1]] || "-",
+            dept: w[headers[2]] || "-" 
         }))
     };
 
-    // ส่งข้อมูลออกแบบเงียบๆ (ไม่ Refresh หน้า)
     fetch(GOOGLE_SCRIPT_URL, {
         method: "POST",
-        mode: "no-cors", // สำคัญ: ต้องใช้ no-cors เพื่อให้ส่งข้ามโดเมนได้โดยไม่ติด Error
-        headers: {
-            "Content-Type": "application/json"
-        },
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(dataToSend)
     }).then(() => {
         console.log("Sent to sheet successfully!");
@@ -319,4 +387,6 @@ function filterHistory() {
         items[i].style.display = (text.toLowerCase().indexOf(filter) > -1) ? "flex" : "none";
     }
 }
+
+// เริ่ม Animation
 animate();
