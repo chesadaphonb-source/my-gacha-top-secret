@@ -225,7 +225,7 @@ function toggleHistory() {
                  </div>
              `;
 
-            list.innerHTML = tabsHtml + contentHtml;
+            list.innerHTML = tabsHtml + contentHtml + downloadBtn;
 
             // --- ส่วนระบบ Click & Drag เหมือนเดิม ---
             const slider = document.getElementById('tabsContainer');
@@ -394,3 +394,4 @@ function downloadCSV() {
 }
 
 animate();
+
