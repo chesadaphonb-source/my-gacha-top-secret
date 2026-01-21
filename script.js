@@ -354,8 +354,8 @@ class Planet {
     }
 }
 
-for(let i=0; i<1000; i++) stars.push(new Star());
-for(let i=0; i<8; i++) planets.push(new Planet());
+for(let i=0; i<3000; i++) stars.push(new Star());
+for(let i=0; i<20; i++) planets.push(new Planet());
 
 function animate() {
     ctx.fillStyle = isWarping ? "rgba(0,0,0,0.3)" : "#0c0c10";
@@ -392,4 +392,5 @@ function downloadCSV() {
     link.click();
     document.body.removeChild(link);
 }
+
 animate();
