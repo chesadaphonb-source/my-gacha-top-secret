@@ -193,8 +193,8 @@ function toggleHistory() {
             });
             tabsHtml += `</div>`;
             contentHtml += `</div>`;
-            const footerHtml = "";
-            list.innerHTML = tabsHtml + contentHtml + footerHtml;
+           
+            list.innerHTML = tabsHtml + contentHtml;
             initDragScroll();
         }
         modal.style.display = 'flex';
@@ -290,3 +290,4 @@ function saveToSheet(winners, rankName) {
 }
 
 animate();
+
