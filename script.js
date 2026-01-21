@@ -111,6 +111,7 @@ function performRaffle() {
     const winners = participants.slice(0, drawCount);
     participants = participants.slice(drawCount);
     winnersHistory[tier.name].push(...winners);
+       saveToSheet(winners, tier.name);
     showResults(winners, tier);
 }
 
@@ -264,5 +265,32 @@ function animate() {
     ctx.fillStyle = "#0c0c10"; ctx.fillRect(0, 0, w, h);
     stars.forEach(s => { s.update(); s.draw(); });
     requestAnimationFrame(animate);
+}
+
+// ⚠️ เอา Web App URL ที่ได้จากข้อ 1 มาใส่ตรงนี้
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby_BJhSpOljb4B0rgocuzrV-ehaiL9Tq5yCWkJcAFiL85cGYUTGb5RF7jvczH99B7Ie0g/exec"; 
+
+function saveToSheet(winners, rankName) {
+    // แปลงข้อมูลให้อยู่ในรูปแบบที่ Script เราเข้าใจ
+    const dataToSend = {
+        rank: rankName,
+        winners: winners.map(w => ({
+            id: w[headers[0]] || "-",   // อิงตามหัวตารางคอลัมน์แรก
+            name: w[headers[1]] || "-", // อิงตามหัวตารางคอลัมน์สอง
+            dept: w[headers[2]] || "-"  // อิงตามหัวตารางคอลัมน์สาม
+        }))
+    };
+
+    // ส่งข้อมูลออกแบบเงียบๆ (ไม่ Refresh หน้า)
+    fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors", // สำคัญ: ต้องใช้ no-cors เพื่อให้ส่งข้ามโดเมนได้โดยไม่ติด Error
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(dataToSend)
+    }).then(() => {
+        console.log("Sent to sheet successfully!");
+    }).catch(err => console.error("Error sending to sheet:", err));
 }
 animate();
