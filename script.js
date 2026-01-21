@@ -161,8 +161,6 @@ function resetGame() {
 function toggleHistory() {
     const modal = document.getElementById('historyModal');
     const list = document.getElementById('historyList');
-    const sheetInput = document.getElementById('sheetUrl');
-    const sheetUrl = sheetInput ? sheetInput.value.trim() : "";
 
     if (modal.style.display === 'flex') {
         modal.style.display = 'none';
@@ -177,7 +175,9 @@ function toggleHistory() {
             activePrizes.forEach((prize, index) => {
                 const isActive = index === 0 ? 'active' : '';
                 const winners = winnersHistory[prize.name];
+
                 tabsHtml += `<button class="tab-btn ${isActive}" onclick="switchTab(event, 'tab-${index}')">${prize.name} <span>(${winners.length})</span></button>`;
+
                 contentHtml += `
                     <div id="tab-${index}" class="tab-content ${isActive}">
                         <div style="text-align:right; margin-bottom:10px;">
@@ -187,14 +187,23 @@ function toggleHistory() {
                 winners.forEach(w => {
                     const name = w[headers[1]] || "ไม่ระบุชื่อ";
                     const dept = w[headers[2]] || "-"; 
-                    contentHtml += `<div class="history-item">${name} <span>${dept}</span></div>`;
+                    contentHtml += `<div class="history-item searchable-item">${name} <span>${dept}</span></div>`;
                 });
                 contentHtml += `</div>`;
             });
+
             tabsHtml += `</div>`;
             contentHtml += `</div>`;
-           
-            list.innerHTML = tabsHtml + contentHtml;
+
+           // ✅ เพิ่มช่องค้นหา (Search Bar)
+            const searchHtml = `
+                <div style="padding: 10px 20px; text-align: center;">
+                    <input type="text" id="historySearchInput" onkeyup="filterHistory()" placeholder="🔍 พิมพ์ชื่อเพื่อค้นหา..." 
+                    style="width: 100%; max-width: 400px; padding: 10px; border-radius: 20px; border: 1px solid #555; background: #222; color: #fff; text-align: center; outline: none;">
+                </div>
+            `;
+
+            list.innerHTML = tabsHtml + searchHtml + contentHtml;
             initDragScroll();
         }
         modal.style.display = 'flex';
@@ -211,12 +220,20 @@ function initDragScroll() {
     slider.addEventListener('mousemove', (e) => { if (!isDown) return; e.preventDefault(); const x = e.pageX - slider.offsetLeft; const walk = (x - startX) * 2; slider.scrollLeft = scrollLeft - walk; });
 }
 
-window.switchTab = function(event, tabId) {														
+window.switchTab = function(event, tabId) {                                                      
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     event.currentTarget.classList.add('active');
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    
     const target = document.getElementById(tabId);
     if(target) target.classList.add('active');
+
+    // เคลียร์ค่าในช่องค้นหา
+    const searchInput = document.getElementById('historySearchInput');
+    if (searchInput) {
+        searchInput.value = ""; 
+        document.querySelectorAll('.searchable-item').forEach(item => item.style.display = "flex");
+    }
 }
 
 function copyToClipboard(rankName) {
@@ -289,5 +306,17 @@ function saveToSheet(winners, rankName) {
     }).catch(err => console.error("Error sending to sheet:", err));
 }
 
-animate();
+/* --- ฟังก์ชันสำหรับกรองรายชื่อ (Search Logic) --- */
+function filterHistory() {
+    const input = document.getElementById('historySearchInput');
+    const filter = input.value.toLowerCase();
+    const activeTab = document.querySelector('.tab-content.active');
+    if (!activeTab) return;
 
+    const items = activeTab.getElementsByClassName('searchable-item');
+    for (let i = 0; i < items.length; i++) {
+        const text = items[i].textContent || items[i].innerText;
+        items[i].style.display = (text.toLowerCase().indexOf(filter) > -1) ? "flex" : "none";
+    }
+}
+animate();
