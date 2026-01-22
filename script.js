@@ -292,6 +292,7 @@ function showResults(winners, tier) {
         card.className = 'card';
         card.style.borderColor = tier.color;
         card.style.animationDelay = `${index * 0.05}s`;
+        card.style.overflow = "hidden";
         const idVal = winner[headers[0]]; 
         const nameVal = winner[headers[1]] || ""; 
         let subInfo = "";
@@ -300,12 +301,7 @@ function showResults(winners, tier) {
             if(val && val !== "-") subInfo += `<div class="info-sub">${headers[k]}: ${val}</div>`;
         }
         card.innerHTML = `
-            <div class="card-header" style="background:${tier.color};">${idVal}</div>
-            <div class="card-body">
-                <div class="info-main" style="color:${tier.color}">${nameVal}</div>
-                ${subInfo}
-            </div>
-        `;
+            <div class="card-header" style="background:${tier.color};">${idVal}</div><div class="card-body"><div class="info-main" style="color:${tier.color}">${nameVal}</div>${subInfo}</div>`;
         grid.appendChild(card);
     });
     document.getElementById('resultScreen').style.display = 'flex';
@@ -560,3 +556,4 @@ window.forceClearCache = function() {
 }
 
 animate();
+
