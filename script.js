@@ -150,6 +150,10 @@ function startWish() {
     // ฟังก์ชันนี้ทำงานเฉพาะเครื่อง Admin เท่านั้น
     if(!isAdmin) return; 
 
+   // ✅✅✅ เพิ่ม 2 บรรทัดนี้: ซ่อนปุ่ม Update ตอนเริ่มสุ่ม
+    const btnUpdate = document.getElementById('btnUpdate');
+    if(btnUpdate) btnUpdate.style.display = 'none';
+   
     const currentPrizeName = prizes[currentTier].name;
     if (winnersHistory[currentPrizeName] && winnersHistory[currentPrizeName].length > 0) {
         alert("⛔ รางวัลรอบนี้สุ่มไปแล้วครับ!");
@@ -310,8 +314,12 @@ function showResults(winners, tier) {
 function closeResult() {
     document.getElementById('resultScreen').style.display = 'none';
     document.querySelector('.container').style.opacity = 1;
+   
     if(document.querySelector('.btn-history-toggle'))
         document.querySelector('.btn-history-toggle').style.display = 'block';
+   
+    const btnUpdate = document.getElementById('btnUpdate');
+    if(btnUpdate) btnUpdate.style.display = 'block';
 }
 
 /* --- History & Copy System --- */
@@ -537,13 +545,21 @@ function saveToSheet(winners, rankName) {
     }).catch(err => console.error("Error sending to sheet:", err));
 }
 
-function clearCache() {
-  if(!confirm("จะล้างแคชเพื่ออัปเดตข้อมูลใช่ไหม?")) return;
-  // เทคนิคหลอก Browser ว่าเป็นเว็บใหม่ด้วยการเติมเลขสุ่ม
-  window.location.href = window.location.pathname + '?v=' + new Date().getTime();
+window.forceClearCache = function() {
+    if(!confirm("ต้องการล้าง Cache เพื่ออัปเดตข้อมูลใช่ไหม?")) return;
+
+    // 1. ล้างข้อมูลในเครื่อง
+    localStorage.clear();
+    sessionStorage.clear();
+
+    // 2. สั่งโหลดหน้าใหม่แบบบังคับ (Cache Busting)
+    const url = new URL(window.location.href);
+    url.searchParams.set('v', Date.now()); 
+    window.location.href = url.toString();
 }
 
 animate();
+
 
 
 
