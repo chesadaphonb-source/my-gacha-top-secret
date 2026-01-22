@@ -149,10 +149,6 @@ function loadData() {
 function startWish() {
     // ฟังก์ชันนี้ทำงานเฉพาะเครื่อง Admin เท่านั้น
     if(!isAdmin) return; 
-
-   // ✅✅✅ เพิ่ม 2 บรรทัดนี้: ซ่อนปุ่ม Update ตอนเริ่มสุ่ม
-    const btnUpdate = document.getElementById('btnUpdate');
-    if(btnUpdate) btnUpdate.style.display = 'none';
    
     const currentPrizeName = prizes[currentTier].name;
     if (winnersHistory[currentPrizeName] && winnersHistory[currentPrizeName].length > 0) {
@@ -265,6 +261,10 @@ function runWarpEffect() {
     document.querySelector('.container').style.opacity = 0;
     if(document.querySelector('.btn-history-toggle')) 
         document.querySelector('.btn-history-toggle').style.display = 'none';
+   
+   // ✅✅✅ ส่วนใหม่: ซ่อนปุ่ม Update (เติมตรงนี้ชัวร์สุด) ---
+    const btnUpdate = document.getElementById('btnUpdate');
+    if(btnUpdate) btnUpdate.style.display = 'none';
 
     if(meteor) { meteor.style.color = starColor; meteor.classList.add('meteor-falling'); }
     if(flash) { 
@@ -317,6 +317,11 @@ function closeResult() {
    
     if(document.querySelector('.btn-history-toggle'))
         document.querySelector('.btn-history-toggle').style.display = 'block';
+
+   // ✅✅✅ ส่วนใหม่: โชว์ปุ่ม Update กลับมา ---
+    const btnUpdate = document.getElementById('btnUpdate');
+    if(btnUpdate) btnUpdate.style.display = 'block';
+    // ------------------------------------------
    
     const btnUpdate = document.getElementById('btnUpdate');
     if(btnUpdate) btnUpdate.style.display = 'block';
@@ -559,6 +564,7 @@ window.forceClearCache = function() {
 }
 
 animate();
+
 
 
 
