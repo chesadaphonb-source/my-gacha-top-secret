@@ -24,12 +24,6 @@
                placeholder="วางลิงก์ CSV ตรงนี้...">
         <br>
         <button class="btn-wish" onclick="loadData()">Load Data</button>
-                
-        <div style="margin-top: 15px;">
-        <button onclick="forceClearCache()" style="background: #ff4757; color: white; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-family: 'Kanit';">
-                🧹 ล้างแคช (Update)
-        </button>
-    </div> 
     </div>
 </div>
 
@@ -62,9 +56,12 @@
 </div> 
 
     <button class="btn-history-toggle" onclick="toggleHistory()">
-    📜 History
+       📜 History
     </button>
-
+    <button class="btn-clear-cache" onclick="forceClearCache()">
+       🧹 Update
+    </button>
+        
 <div id="historyModal" class="history-modal">
     <div class="history-content">
         <div class="history-header">
@@ -82,4 +79,5 @@
 </body>
 
 </html>
+
 
