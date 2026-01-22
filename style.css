@@ -365,3 +365,43 @@ input[type="text"]:focus {
         padding: 10px 0;
     }
 }
+
+/* =========================================
+   ปุ่มล้างแคช (มุมขวาบน)
+   ========================================= */
+.btn-clear-cache {
+    position: fixed;
+    z-index: 1000;
+    cursor: pointer;
+    border: none;
+    background: #ff4757; /* สีแดง */
+    color: white;
+    border-radius: 30px;
+    font-family: 'Kanit', sans-serif;
+    box-shadow: 0 4px 15px rgba(255, 71, 87, 0.4);
+    transition: all 0.3s ease;
+
+    /* ตำแหน่งในจอคอม (PC) */
+    top: 80px;  /* อยู่ต่ำกว่าปุ่ม History ลงมา */
+    right: 20px;
+    padding: 8px 16px;
+    font-size: 14px;
+}
+
+.btn-clear-cache:hover {
+    transform: scale(1.05);
+    background: #ff6b81;
+}
+
+/* =========================================
+   ปรับตำแหน่งในมือถือ (Mobile)
+   ========================================= */
+@media screen and (max-width: 768px) {
+    .btn-clear-cache {
+        /* ปรับให้เล็กและขยับขึ้นไปชิด History มากขึ้น */
+        top: 50px !important; 
+        right: 10px !important;
+        padding: 4px 10px !important;
+        font-size: 10px !important;
+    }
+}
