@@ -155,10 +155,14 @@ function startWish() {
 }
 
 // 3. คำนวณผู้ชนะ และส่งผลขึ้น Cloud
+// 3. คำนวณผู้ชนะ และส่งผลขึ้น Cloud (ฉบับแก้บั๊กจอฟ้า 100%)
 function performRaffle() {
     if(!isAdmin) return;
 
     const tier = prizes[currentTier];
+    // กันเหนียว: ถ้าไม่มีรางวัลนี้ในระบบ ให้หยุดทำงาน (กัน Error)
+    if (!tier) return alert("ไม่พบข้อมูลรางวัล");
+
     const drawCount = Math.min(tier.count, participants.length);
     
     // Logic สุ่ม (Fisher-Yates Shuffle)
@@ -170,8 +174,15 @@ function performRaffle() {
     const winners = participants.slice(0, drawCount);
     const remainingParticipants = participants.slice(drawCount);
     
-    // อัปเดตประวัติในเครื่อง Admin เพื่อเตรียมส่ง
+    // --- แก้ไขจุดเสี่ยง Error (undefined push) ---
     let newHistory = { ...winnersHistory };
+    
+    // ถ้ายังไม่มีอาเรย์ของรางวัลนี้ ให้สร้างใหม่ก่อน (สำคัญมาก!)
+    if (!newHistory[tier.name]) {
+        newHistory[tier.name] = [];
+    }
+    
+    // บันทึกแบบปลอดภัย
     newHistory[tier.name].push(...winners);
 
     // 🔥 ส่งผลผู้ชนะ + รายชื่อที่เหลือ + สถานะโชว์ผล ขึ้น Firebase
@@ -519,4 +530,5 @@ window.resetGame = resetGame;
 window.toggleHistory = toggleHistory;
 window.copyToClipboard = copyToClipboard;
 window.filterHistory = filterHistory;
+
 // window.switchTab มีเขียนไว้ในโค้ดแล้ว ไม่ต้องใส่ซ้ำ
