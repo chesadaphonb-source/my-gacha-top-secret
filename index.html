@@ -31,9 +31,17 @@
     <div id="bannerDisplay" class="banner-display"></div>
     <div class="pool-count" id="poolCount">กำลังโหลด...</div>
     
-    <button class="btn-wish start-btn" onclick="startWish()">
-        ✦ START WISH ✦
-    </button>
+    <div class="action-area">
+        <button id="btnStart" class="btn-wish start-btn" onclick="startWish()" style="display: none;">
+            ✦ START WISH ✦
+        </button>
+
+        <div id="msgWaiting" class="waiting-box" style="display: none;">
+            <div class="spinner"></div>
+            <h3>Waiting for next round...</h3>
+            <p>กรุณารอผู้ดูแลระบบเริ่มการสุ่ม</p>
+        </div>
+    </div>
 </div>
 
 <div id="resultScreen">
@@ -79,6 +87,7 @@
 </body>
 
 </html>
+
 
 
 
