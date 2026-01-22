@@ -321,10 +321,6 @@ function closeResult() {
    // ✅✅✅ ส่วนใหม่: โชว์ปุ่ม Update กลับมา ---
     const btnUpdate = document.getElementById('btnUpdate');
     if(btnUpdate) btnUpdate.style.display = 'block';
-    // ------------------------------------------
-   
-    const btnUpdate = document.getElementById('btnUpdate');
-    if(btnUpdate) btnUpdate.style.display = 'block';
 }
 
 /* --- History & Copy System --- */
@@ -564,11 +560,3 @@ window.forceClearCache = function() {
 }
 
 animate();
-
-
-
-
-
-
-
-
