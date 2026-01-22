@@ -33,7 +33,7 @@ window.closeResult = closeResult;
 
 // --- Configuration & Global Variables (ต้องประกาศก่อน onValue) ---
 const prizes = [
-    { name: "Rank 5 (General)", count: 50, color: "#65a5f0" },
+    { name: "รางวัลเงิน 100 บาท", count: 50, color: "#65a5f0" },
     { name: "Rank 4 (Rare)", count: 30, color: "#d376f0" },
     { name: "Rank 3 (Epic)", count: 15, color: "#d376f0" },
     { name: "Rank 2 (Vice)", count: 5, color: "#ffd700" },
@@ -538,6 +538,7 @@ function saveToSheet(winners, rankName) {
 }
 
 animate();
+
 
 
 
