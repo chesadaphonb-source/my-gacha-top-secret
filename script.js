@@ -588,7 +588,30 @@ window.forceClearCache = function() {
     url.searchParams.set('v', Date.now()); 
     window.location.href = url.toString();
 }
+// ==========================================
+// ✅ ส่วนที่เพิ่มใหม่: เช็คสิทธิ์ Admin / Viewer
+// ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+    // เช็คว่าใน URL มีคำว่า ?admin=true หรือไม่
+    const urlParams = new URLSearchParams(window.location.search);
+    const isAdminUser = urlParams.get('admin') === 'true';
 
+    const btnStart = document.getElementById('btnStart');
+    const msgWaiting = document.getElementById('msgWaiting');
+
+    if (isAdminUser) {
+        // 👑 ถ้าเป็น Admin: โชว์ปุ่ม Start, ซ่อน Waiting
+        if(btnStart) btnStart.style.display = 'inline-block';
+        if(msgWaiting) msgWaiting.style.display = 'none';
+        console.log("Mode: Admin");
+    } else {
+        // 👤 ถ้าเป็นคนดู: ซ่อนปุ่ม Start, โชว์ Waiting
+        if(btnStart) btnStart.style.display = 'none';
+        if(msgWaiting) msgWaiting.style.display = 'flex';
+        console.log("Mode: Viewer");
+    }
+});
 animate();
+
 
 
