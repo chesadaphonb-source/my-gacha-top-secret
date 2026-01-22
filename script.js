@@ -283,27 +283,61 @@ function stopWarpEffect() {
 
 function showResults(winners, tier) {
     const grid = document.getElementById('resultGrid');
-    document.getElementById('resultTitle').innerText = tier.name;
-    document.getElementById('resultTitle').style.color = tier.color;
+    const title = document.getElementById('resultTitle');
+
+    // --- ส่วนที่ 1: ตั้งค่าหัวข้อ (Title) ---
+    title.innerText = tier.name;
+    title.style.color = tier.color;
+    
+    // 🔥 ปรับหัวข้อให้ชิดซ้ายตามที่ขอ
+    title.style.textAlign = 'left'; 
+    title.style.width = '100%';
+    title.style.paddingLeft = '10px'; // เว้นระยะจากขอบนิดหน่อยจะได้ไม่เบียดจอ
+    
     grid.innerHTML = "";
 
+    // --- ส่วนที่ 2: สร้างการ์ดรางวัล (วิธีใหม่: ไม่ใช้ innerHTML) ---
     winners.forEach((winner, index) => {
+        // 1. สร้างกล่องหลัก (Card)
         const card = document.createElement('div');
         card.className = 'card';
         card.style.borderColor = tier.color;
         card.style.animationDelay = `${index * 0.05}s`;
-        card.style.overflow = "hidden";
-        const idVal = winner[headers[0]]; 
-        const nameVal = winner[headers[1]] || ""; 
-        let subInfo = "";
-        for(let k=2; k < headers.length; k++) {
-            const val = winner[headers[k]];
-            if(val && val !== "-") subInfo += `<div class="info-sub">${headers[k]}: ${val}</div>`;
-        }
-        card.innerHTML = `
-            <div class="card-header" style="background:${tier.color};">${idVal}</div><div class="card-body"><div class="info-main" style="color:${tier.color}">${nameVal}</div>${subInfo}</div>`;
-        grid.appendChild(card);
+        card.style.overflow = "hidden"; // ตัดมุมโค้งให้สวย
+
+        // 2. สร้างส่วนหัว (Header) - สีพื้นหลัง
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'card-header';
+        headerDiv.style.background = tier.color;
+        headerDiv.textContent = winner[headers[0]]; // ใส่เลข ID
+        card.appendChild(headerDiv); // ยัดใส่ card
+
+        // 3. สร้างส่วนเนื้อหา (Body)
+        const bodyDiv = document.createElement('div');
+        bodyDiv.className = 'card-body';
+        
+            // 3.1 ชื่อคน (Main Info)
+            const mainInfo = document.createElement('div');
+            mainInfo.className = 'info-main';
+            mainInfo.style.color = tier.color;
+            mainInfo.textContent = winner[headers[1]] || "";
+            bodyDiv.appendChild(mainInfo);
+
+            // 3.2 ข้อมูลย่อย (Sub Info) - วนลูปสร้าง
+            for(let k=2; k < headers.length; k++) {
+                const val = winner[headers[k]];
+                if(val && val !== "-") {
+                    const subInfo = document.createElement('div');
+                    subInfo.className = 'info-sub';
+                    subInfo.textContent = `${headers[k]}: ${val}`;
+                    bodyDiv.appendChild(subInfo);
+                }
+            }
+
+        card.appendChild(bodyDiv); // ยัด Body ใส่ card
+        grid.appendChild(card);    // ยัด card ลงตาราง
     });
+
     document.getElementById('resultScreen').style.display = 'flex';
 }
 
@@ -556,4 +590,5 @@ window.forceClearCache = function() {
 }
 
 animate();
+
 
