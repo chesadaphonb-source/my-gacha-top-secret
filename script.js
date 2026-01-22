@@ -597,7 +597,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const isAdminUser = urlParams.get('admin') === 'true';
 
     const btnStart = document.getElementById('btnStart');
-    const msgWaiting = document.getElementById('msgWaiting');
+    const msgWaiting = document.getElementById('msgWaiting')
+    const controlBar = document.querySelector('.control-bar');
 
     if (isAdminUser) {
         // 👑 ถ้าเป็น Admin: โชว์ปุ่ม Start, ซ่อน Waiting
@@ -612,6 +613,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 animate();
+
 
 
 
