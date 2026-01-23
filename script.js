@@ -59,15 +59,21 @@ const isAdmin = urlParams.get('admin') === 'true';
 onValue(gameRef, (snapshot) => {
     const data = snapshot.val();
     
-    // 1. ถ้าเชื่อมต่อไม่ได้ หรือไม่มีข้อมูลเลย
+    const setupBox = document.getElementById('setupContainer');
+    const mainScreen = document.getElementById('mainScreen');
+    const msgWaiting = document.getElementById('msgWaiting');
+    const btnStart = document.getElementById('btnStart');
+
+    // 1. กรณี: ยังไม่มีข้อมูลใน Database เลย (หรือต่อไม่ได้)
     if (!data) {
         if (isAdmin) {
-             // 👑 Admin: บังคับโชว์หน้า Setup ทันที
-             document.getElementById('setupContainer').style.display = 'block';
-             document.getElementById('mainScreen').style.display = 'none';
+             // 👑 Admin: บังคับโชว์หน้า Setup
+             setupBox.style.display = 'block';
+             mainScreen.style.display = 'none';
         } else {
-             // 👤 User: รอ
-             document.getElementById('setupContainer').style.display = 'none';
+             // 👤 Viewer: บังคับโชว์หน้า Main (ที่เป็น Waiting)
+             setupBox.style.display = 'none';
+             mainScreen.style.display = 'block'; // ✅ สำคัญ! ต้องสั่งเปิดหน้านี้
              showWaitingScreen();
         }
         return;
@@ -79,29 +85,27 @@ onValue(gameRef, (snapshot) => {
     winnersHistory = data.history || {};
     currentTier = data.currentTier || 0;
 
-    // 2. เช็คว่ามีข้อมูลผู้เข้าร่วมหรือยัง?
+    // 2. กรณี: มี Database แต่ยังไม่มีรายชื่อ (Participants = 0)
     if (!participants || participants.length === 0) {
         if (isAdmin) {
-            // 👑 Admin: ต้องเห็นหน้า Setup (สั่งแก้ display: none จาก HTML ให้กลับมาโชว์)
-            document.getElementById('setupContainer').style.display = 'block';
-            document.getElementById('mainScreen').style.display = 'none';
+            // 👑 Admin: กลับไปหน้า Setup
+            setupBox.style.display = 'block';
+            mainScreen.style.display = 'none';
         } else {
-            // 👤 User: ไม่เห็นหน้า Setup, เห็นหน้า Waiting
-            document.getElementById('setupContainer').style.display = 'none';
-            document.getElementById('mainScreen').style.display = 'block';
+            // 👤 Viewer: หน้า Waiting
+            setupBox.style.display = 'none';
+            mainScreen.style.display = 'block'; // ✅ สำคัญ!
             showWaitingScreen();
         }
-        return; // จบการทำงานแค่นี้สำหรับเคสไม่มีข้อมูล
+        return; 
     }
 
-    // 3. ถ้ามีข้อมูลแล้ว (Participants > 0)
+    // 3. กรณี: ตั้งค่าเสร็จแล้ว (พร้อมเล่น)
     if (data.isSetupDone) {
-        document.getElementById('setupContainer').style.display = 'none';
-        document.getElementById('mainScreen').style.display = 'block';
+        setupBox.style.display = 'none';
+        mainScreen.style.display = 'block';
         
-        // ซ่อนหน้า Waiting (ถ้าเปิดอยู่)
-        const msgWaiting = document.getElementById('msgWaiting');
-        const btnStart = document.getElementById('btnStart');
+        // ปิดหน้า Waiting
         if(msgWaiting) msgWaiting.style.display = 'none';
         
         // ถ้าเป็น Admin ให้โชว์ปุ่ม Start
@@ -110,7 +114,7 @@ onValue(gameRef, (snapshot) => {
         updateUI();
     }
 
-    // --- ส่วนควบคุม Animation (เหมือนเดิม) ---
+    // --- Animation & Status ---
     if (data.status === 'WARPING') {
          if (!isWarping) { 
              starColor = data.activeColor;
@@ -128,18 +132,22 @@ onValue(gameRef, (snapshot) => {
     }
 });
 
-// ฟังก์ชันเสริมสำหรับแสดงหน้า Waiting (เพิ่มต่อท้ายใน script.js หรือไว้ใกล้ๆ กันก็ได้)
+// ฟังก์ชันแสดงหน้า Waiting (แก้ให้บังคับเปิด mainScreen ด้วย)
 function showWaitingScreen() {
+    const mainScreen = document.getElementById('mainScreen');
+    const msgWaiting = document.getElementById('msgWaiting');
+    const btnStart = document.getElementById('btnStart');
+
+    // ✅ บังคับเปิด mainScreen ก่อน ไม่งั้นคนดูจะเห็นจอดำ
+    if(mainScreen) mainScreen.style.display = 'block';
+
     document.getElementById('bannerDisplay').innerHTML = `
         <h1 style="color:#FFD700; font-size: 50px; text-shadow: 0 0 10px #FFD700;">⏳ Coming Soon</h1>
         <p style="color:#aaa; font-size: 18px;">กรุณารอเจ้าหน้าที่ตั้งค่าระบบสักครู่...</p>
     `;
     document.getElementById('poolCount').innerText = "";
     
-    const msgWaiting = document.getElementById('msgWaiting');
     if(msgWaiting) msgWaiting.style.display = 'flex';
-    
-    const btnStart = document.getElementById('btnStart');
     if(btnStart) btnStart.style.display = 'none';
 }
 
@@ -659,6 +667,7 @@ document.addEventListener('DOMContentLoaded', () => {
     animate();
 
 });
+
 
 
 
