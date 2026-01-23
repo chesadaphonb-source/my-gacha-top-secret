@@ -67,9 +67,27 @@ onValue(gameRef, (snapshot) => {
 
         // ถ้าไม่มีคน (คือยังไม่ได้ Load Data) ให้แสดงหน้า Setup
         if (!participants || participants.length === 0) {
-             document.getElementById('setupContainer').style.display = 'block';
-             document.getElementById('mainScreen').style.display = 'none';
-             return; 
+            if (isAdmin) {
+                // 👑 ถ้าเป็น Admin: ให้เห็นหน้า Load Data ปกติ
+                document.getElementById('setupContainer').style.display = 'block';
+                document.getElementById('mainScreen').style.display = 'none';
+            } else {
+                // 👤 ถ้าเป็นคนดู: ให้เห็นหน้า "Waiting" (ซ่อนหน้า Load Data)
+                document.getElementById('setupContainer').style.display = 'none';
+                document.getElementById('mainScreen').style.display = 'block';
+                
+                // เปลี่ยนข้อความเป็น "Coming Soon"
+                document.getElementById('bannerDisplay').innerHTML = `
+                    <h1 style="color:#FFD700; font-size: 50px; text-shadow: 0 0 10px #FFD700;">⏳ Coming Soon</h1>
+                    <p style="color:#aaa; font-size: 18px;">กรุณารอเจ้าหน้าที่ตั้งค่าระบบสักครู่...</p>
+                `;
+                document.getElementById('poolCount').innerText = ""; // ซ่อนจำนวนคน
+                
+                // โชว์ตัวหมุนๆ (ถ้ามี)
+                const msgWaiting = document.getElementById('msgWaiting');
+                if(msgWaiting) msgWaiting.style.display = 'flex';
+            }
+            return; // หยุดทำงานแค่นี้ ไม่ต้องไปทำอย่างอื่นต่อ
         }
 
         // ถ้าตั้งค่าเสร็จแล้ว ให้เปลี่ยนหน้า
@@ -614,6 +632,7 @@ document.addEventListener('DOMContentLoaded', () => {
     animate();
 
 });
+
 
 
 
