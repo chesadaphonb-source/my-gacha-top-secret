@@ -37,7 +37,7 @@ const prizes = [
     { name: "รางวัลที่ 6 (200 บาท)", count: 35, color: "#33CC00" },
     { name: "รางวัลที่ 5 (300 บาท)", count: 18, color: "#33CC00" },
     { name: "รางวัลที่ 4 (400 บาท)", count: 15, color: "#99CCFF" },
-    { name: "รางวัลที่ 3 (500 บาท)", count: 19, color: "#FF9999" },
+    { name: "รางวัลที่ 3 (500 บาท)", count: 21, color: "#FF9999" },
     { name: "รางวัลที่ 2 (1000 บาท)", count: 5, color: "#CC33FF" },
     { name: "รางวัลที่ 1 (2000 บาท)", count: 1, color: "#FFD700" }
 ];
@@ -667,6 +667,7 @@ document.addEventListener('DOMContentLoaded', () => {
     animate();
 
 });
+
 
 
 
