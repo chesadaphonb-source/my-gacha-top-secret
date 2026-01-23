@@ -58,63 +58,90 @@ const isAdmin = urlParams.get('admin') === 'true';
    ========================================================================== */
 onValue(gameRef, (snapshot) => {
     const data = snapshot.val();
-    if (data) {
-        // อัปเดตข้อมูลพื้นฐาน
-        headers = data.headers || [];
-        participants = data.participants || [];
-        winnersHistory = data.history || {};
-        currentTier = data.currentTier || 0;
-
-        // ถ้าไม่มีคน (คือยังไม่ได้ Load Data) ให้แสดงหน้า Setup
-        if (!participants || participants.length === 0) {
-            if (isAdmin) {
-                // 👑 ถ้าเป็น Admin: ให้เห็นหน้า Load Data ปกติ
-                document.getElementById('setupContainer').style.display = 'block';
-                document.getElementById('mainScreen').style.display = 'none';
-            } else {
-                // 👤 ถ้าเป็นคนดู: ให้เห็นหน้า "Waiting" (ซ่อนหน้า Load Data)
-                document.getElementById('setupContainer').style.display = 'none';
-                document.getElementById('mainScreen').style.display = 'block';
-                
-                // เปลี่ยนข้อความเป็น "Coming Soon"
-                document.getElementById('bannerDisplay').innerHTML = `
-                    <h1 style="color:#FFD700; font-size: 50px; text-shadow: 0 0 10px #FFD700;">⏳ Coming Soon</h1>
-                    <p style="color:#aaa; font-size: 18px;">กรุณารอเจ้าหน้าที่ตั้งค่าระบบสักครู่...</p>
-                `;
-                document.getElementById('poolCount').innerText = ""; // ซ่อนจำนวนคน
-                
-                // โชว์ตัวหมุนๆ (ถ้ามี)
-                const msgWaiting = document.getElementById('msgWaiting');
-                if(msgWaiting) msgWaiting.style.display = 'flex';
-            }
-            return; // หยุดทำงานแค่นี้ ไม่ต้องไปทำอย่างอื่นต่อ
+    
+    // 1. ถ้าเชื่อมต่อไม่ได้ หรือไม่มีข้อมูลเลย
+    if (!data) {
+        if (isAdmin) {
+             // 👑 Admin: บังคับโชว์หน้า Setup ทันที
+             document.getElementById('setupContainer').style.display = 'block';
+             document.getElementById('mainScreen').style.display = 'none';
+        } else {
+             // 👤 User: รอ
+             document.getElementById('setupContainer').style.display = 'none';
+             showWaitingScreen();
         }
+        return;
+    }
 
-        // ถ้าตั้งค่าเสร็จแล้ว ให้เปลี่ยนหน้า
-        if (data.isSetupDone) {
+    // อัปเดตตัวแปร Global
+    headers = data.headers || [];
+    participants = data.participants || [];
+    winnersHistory = data.history || {};
+    currentTier = data.currentTier || 0;
+
+    // 2. เช็คว่ามีข้อมูลผู้เข้าร่วมหรือยัง?
+    if (!participants || participants.length === 0) {
+        if (isAdmin) {
+            // 👑 Admin: ต้องเห็นหน้า Setup (สั่งแก้ display: none จาก HTML ให้กลับมาโชว์)
+            document.getElementById('setupContainer').style.display = 'block';
+            document.getElementById('mainScreen').style.display = 'none';
+        } else {
+            // 👤 User: ไม่เห็นหน้า Setup, เห็นหน้า Waiting
             document.getElementById('setupContainer').style.display = 'none';
             document.getElementById('mainScreen').style.display = 'block';
-            updateUI();
+            showWaitingScreen();
         }
+        return; // จบการทำงานแค่นี้สำหรับเคสไม่มีข้อมูล
+    }
 
-        // --- ควบคุม Animation ตามสถานะ Server ---
-        if (data.status === 'WARPING') {
-             if (!isWarping) { 
-                 starColor = data.activeColor;
-                 runWarpEffect(); // เรียกฟังก์ชันวาร์ป
-             }
-        } else if (data.status === 'SHOW_RESULT') {
-            stopWarpEffect(); // หยุดวาร์ป
-            const tier = prizes[currentTier];
-            if(data.lastRoundWinners) {
-                showResults(data.lastRoundWinners, tier);
-            }
-        } else if (data.status === 'IDLE') {
-             closeResult(); 
-             stopWarpEffect();
+    // 3. ถ้ามีข้อมูลแล้ว (Participants > 0)
+    if (data.isSetupDone) {
+        document.getElementById('setupContainer').style.display = 'none';
+        document.getElementById('mainScreen').style.display = 'block';
+        
+        // ซ่อนหน้า Waiting (ถ้าเปิดอยู่)
+        const msgWaiting = document.getElementById('msgWaiting');
+        const btnStart = document.getElementById('btnStart');
+        if(msgWaiting) msgWaiting.style.display = 'none';
+        
+        // ถ้าเป็น Admin ให้โชว์ปุ่ม Start
+        if(isAdmin && btnStart) btnStart.style.display = 'inline-block';
+
+        updateUI();
+    }
+
+    // --- ส่วนควบคุม Animation (เหมือนเดิม) ---
+    if (data.status === 'WARPING') {
+         if (!isWarping) { 
+             starColor = data.activeColor;
+             runWarpEffect();
+         }
+    } else if (data.status === 'SHOW_RESULT') {
+        stopWarpEffect();
+        const tier = prizes[currentTier];
+        if(data.lastRoundWinners) {
+            showResults(data.lastRoundWinners, tier);
         }
+    } else if (data.status === 'IDLE') {
+         closeResult(); 
+         stopWarpEffect();
     }
 });
+
+// ฟังก์ชันเสริมสำหรับแสดงหน้า Waiting (เพิ่มต่อท้ายใน script.js หรือไว้ใกล้ๆ กันก็ได้)
+function showWaitingScreen() {
+    document.getElementById('bannerDisplay').innerHTML = `
+        <h1 style="color:#FFD700; font-size: 50px; text-shadow: 0 0 10px #FFD700;">⏳ Coming Soon</h1>
+        <p style="color:#aaa; font-size: 18px;">กรุณารอเจ้าหน้าที่ตั้งค่าระบบสักครู่...</p>
+    `;
+    document.getElementById('poolCount').innerText = "";
+    
+    const msgWaiting = document.getElementById('msgWaiting');
+    if(msgWaiting) msgWaiting.style.display = 'flex';
+    
+    const btnStart = document.getElementById('btnStart');
+    if(btnStart) btnStart.style.display = 'none';
+}
 
 /* ==========================================================================
    ส่วนที่ 3: Logic การทำงาน (Admin สั่งงาน)
@@ -632,6 +659,7 @@ document.addEventListener('DOMContentLoaded', () => {
     animate();
 
 });
+
 
 
 
