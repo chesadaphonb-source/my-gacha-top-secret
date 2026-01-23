@@ -467,5 +467,51 @@ input[type="text"]:focus {
     to { opacity: 1; transform: translateY(0); }
 }
 
+/* =========================================
+   ปุ่มล้างระบบ (Reset System) - Admin Only
+   ========================================= */
+.btn-reset-system {
+    position: fixed;
+    z-index: 999;
+    cursor: pointer;
+    border: none;
+    /* สีแดงเข้ม ให้ดูอันตราย */
+    background: rgba(220, 20, 60, 0.9); 
+    color: white;
+    border: 2px solid #ff4d4d;
+    border-radius: 20px;
+    font-family: 'Kanit', sans-serif;
+    box-shadow: 0 4px 15px rgba(255, 0, 0, 0.4);
+    transition: all 0.3s ease;
+    
+    /* ซ่อนไว้ก่อน เดี๋ยว JS มาเปิดให้ Admin */
+    display: none; 
+
+    /* ตำแหน่ง: อยู่ใต้ปุ่ม Update ลงมาอีก */
+    top: 130px;  
+    right: 25px; 
+    
+    padding: 8px 15px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.btn-reset-system:hover {
+    transform: scale(1.1);
+    background: #ff0000;
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+}
+
+/* ปรับตำแหน่งในมือถือ */
+@media screen and (max-width: 768px) {
+    .btn-reset-system {
+        top: 90px !important; 
+        right: 10px !important;
+        padding: 5px 10px !important;
+        font-size: 11px !important;
+    }
+}
+
+
 
 
