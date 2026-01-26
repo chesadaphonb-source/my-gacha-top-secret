@@ -1,4 +1,6 @@
-/* --- ตั้งค่าธีม Space --- */
+/* =================================================================
+   1. GLOBAL & THEME
+   ================================================================= */
 :root {
     --bg-dark: #0c0c10;
     --card-bg: #2a2a35;
@@ -19,14 +21,17 @@ body {
     align-items: center;
 }
 
-/* --- Background Stars --- */
+/* =================================================================
+   2. BACKGROUND & ANIMATION
+   ================================================================= */
+/* Background Stars */
 #starCanvas {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     z-index: -1;
     background: radial-gradient(circle at center, #1b2735 0%, #090a0f 100%);
 }
 
-/* --- Meteor Animation (ลูกไฟพุ่งชน) --- */
+/* Meteor Animation (ลูกไฟพุ่งชน) */
 #meteor {
     position: fixed; top: 50%; left: 50%;
     transform: translate(-50%, -50%) scale(0);
@@ -50,13 +55,15 @@ body {
     100% { transform: translate(-50%, -50%) scale(50); opacity: 0; color: currentColor; }
 }
 
-/* --- Flash Overlay --- */
+/* Flash Overlay */
 #flashOverlay { 
     position: fixed; top:0; left:0; width:100%; height:100%; 
     background: white; z-index: 999; pointer-events: none; opacity: 0; transition: opacity 0.5s; 
 }
 
-/* --- UI Containers --- */
+/* =================================================================
+   3. MAIN UI & SETUP
+   ================================================================= */
 .container {
     z-index: 10; text-align: center; width: 90%; max-width: 800px;
     transition: opacity 0.5s;
@@ -75,7 +82,7 @@ input[type="text"] {
     width: 80%; padding: 15px; border-radius: 10px; border: 1px solid #555;
     background: rgba(0,0,0,0.5); color: white; text-align: center; font-size: 16px;
     margin-bottom: 20px;
-    outline: none; /* ลบเส้นขอบเวลาคลิก */
+    outline: none;
 }
 input[type="text"]:focus {
     border-color: var(--gold);
@@ -94,7 +101,53 @@ input[type="text"]:focus {
 
 .start-btn { font-size: 24px; padding: 20px 60px; margin-top: 20px; }
 
-/* --- Result Screen --- */
+/* =================================================================
+   4. WAITING SCREEN (Viewer Mode)
+   ================================================================= */
+.action-area {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-top: 20px;
+    min-height: 80px;
+}
+
+.waiting-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    color: rgba(255, 255, 255, 0.8);
+    animation: fadeIn 0.8s ease;
+}
+
+.waiting-box h3 {
+    margin: 0; font-weight: 400; letter-spacing: 2px;
+    font-size: clamp(1.2rem, 4vw, 1.5rem);
+    text-shadow: 0 0 10px rgba(0, 255, 136, 0.4);
+    color: #fff;
+}
+
+.waiting-box p {
+    margin: 0; font-size: clamp(0.9rem, 3vw, 1rem); color: #888;
+}
+
+.spinner {
+    width: 45px; height: 45px;
+    border: 4px solid rgba(255, 255, 255, 0.1);
+    border-top: 4px solid #00ff88;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
+}
+
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* =================================================================
+   5. RESULT SCREEN & CARDS
+   ================================================================= */
 #resultScreen {
     display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(12, 12, 16, 0.95); z-index: 100;
@@ -109,19 +162,18 @@ input[type="text"]:focus {
 
 .result-content {
     flex: 1 1 auto; overflow-y: auto;
-    padding: 10px 20px 100px 20px; /* Padding ล่างเยอะหน่อยกันปุ่มบัง */
+    padding: 10px 20px 100px 20px;
     -webkit-overflow-scrolling: touch;
 }
 
 .result-grid {
     display: grid;
-    /* ปรับเป็น 140px เพื่อให้จอมือถือเล็กๆ (320px+) แสดง 2 แถวได้ */
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); 
     gap: 15px;
     max-width: 1200px; margin: 0 auto;
 }
 
-/* --- Card Styles --- */
+/* Cards */
 .card {
     padding: 0 !important;
     background: linear-gradient(135deg, #2a2a35 0%, #1c1c22 100%);
@@ -162,7 +214,10 @@ input[type="text"]:focus {
 
 @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-/* --- History Button (ปุ่มมุมขวาบน) --- */
+/* =================================================================
+   6. FLOATING BUTTONS (Top Right)
+   ================================================================= */
+/* History Button */
 .btn-history-toggle {
     position: fixed; 
     top: 20px; 
@@ -173,101 +228,87 @@ input[type="text"]:focus {
     padding: 12px 25px; 
     border-radius: 50px;
     cursor: pointer; 
-    z-index: 1000; /* ✅ ลดลงจาก 9999 ให้ต่ำกว่า Modal (2000) ไม่งั้นปุ่มจะลอยบัง */
+    z-index: 1000; /* <--- ต่ำกว่า Modal (2000) */
     font-family: 'Kanit', sans-serif;
-    font-size: 16px;
-    font-weight: bold;
+    font-size: 16px; font-weight: bold;
     backdrop-filter: blur(5px);
     box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
     transition: all 0.3s;
 }
+.btn-history-toggle:hover { background: #ffd700; color: #000; transform: scale(1.05); }
 
-.btn-history-toggle:hover {
-    background: #ffd700; 
-    color: #000;
-    transform: scale(1.05);
+/* Update Button */
+.btn-clear-cache {
+    position: fixed; z-index: 999;
+    cursor: pointer; border: none;
+    background: rgba(255, 71, 87, 0.9);
+    color: white; border-radius: 20px;
+    font-family: 'Kanit', sans-serif;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+    top: 85px; right: 25px; 
+    padding: 6px 15px; font-size: 14px;
 }
+.btn-clear-cache:hover { transform: scale(1.05); background: #ff6b81; }
+
+/* Reset System Button (Admin Only) */
+.btn-reset-system {
+    position: fixed; z-index: 999;
+    cursor: pointer; border: none;
+    background: rgba(220, 20, 60, 0.9); 
+    color: white; border: 2px solid #ff4d4d;
+    border-radius: 20px; font-family: 'Kanit', sans-serif;
+    box-shadow: 0 4px 15px rgba(255, 0, 0, 0.4);
+    transition: all 0.3s ease;
+    display: none; /* ซ่อนก่อน JS มาเปิด */
+    top: 130px; right: 25px; 
+    padding: 8px 15px; font-size: 14px; font-weight: bold;
+}
+.btn-reset-system:hover { transform: scale(1.1); background: #ff0000; box-shadow: 0 0 20px rgba(255, 0, 0, 0.8); }
 
 /* =================================================================
-   ✅ CSS ชุดซ่อม: HISTORY MODAL
+   7. HISTORY MODAL
    ================================================================= */
-
-/* 1. พื้นหลัง Modal */
 .history-modal {
-    display: none;
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0, 0, 0, 0.85);
-    z-index: 2000; /* ✅ สูงกว่าปุ่ม Toggle */
+    z-index: 2000; /* <--- สูงสุด */
     justify-content: center; align-items: center;
     backdrop-filter: blur(10px);
 }
 
-/* 2. กล่องการ์ดหลัก */
 .history-content {
-    background: #1e1e24;
-    width: 95%;           
-    max-width: 700px;     
-    max-height: 85vh;     
-    border-radius: 15px;
-    border: 1px solid #444;
+    background: #1e1e24; width: 95%; max-width: 700px; max-height: 85vh;      
+    border-radius: 15px; border: 1px solid #444;
     box-shadow: 0 10px 40px rgba(0,0,0,0.6);
-    
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;     
+    display: flex; flex-direction: column; overflow: hidden;      
     animation: fadeIn 0.3s;
 }
 
-@keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-
-/* 3. ส่วนหัว */
 .history-header {
-    padding: 15px 20px;
-    background: #25252d;
-    border-bottom: 1px solid #333;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-shrink: 0; 
+    padding: 15px 20px; background: #25252d; border-bottom: 1px solid #333;
+    display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; 
 }
 .history-header h2 { margin: 0; color: #e4d6a7; font-size: 22px; }
 
-.close-btn {
-    background: none; border: none; color: #888; font-size: 28px; cursor: pointer; padding: 0; line-height: 1;
-}
+.close-btn { background: none; border: none; color: #888; font-size: 28px; cursor: pointer; padding: 0; line-height: 1; }
 .close-btn:hover { color: #fff; }
 
-/* 4. ส่วนลำตัว */
 .history-body {
-    display: flex;
-    flex-direction: column;
-    flex: 1;              
-    min-height: 0;        
-    background: #1e1e24;
-    overflow: hidden;     
+    display: flex; flex-direction: column; flex: 1; min-height: 0;        
+    background: #1e1e24; overflow: hidden;      
 }
 
-/* 5. แถบเมนูแท็บ */
 .history-tabs {
-    display: flex;
-    gap: 8px;
-    padding: 0 15px;
-    background: #1e1e24;
-    border-bottom: 2px solid #2a2a35;
-    
-    overflow-x: auto;     
-    white-space: nowrap;
-    flex-shrink: 0;       
-    
-    -ms-overflow-style: none; scrollbar-width: none;
-    cursor: grab; user-select: none;
+    display: flex; gap: 8px; padding: 0 15px; background: #1e1e24; border-bottom: 2px solid #2a2a35;
+    overflow-x: auto; white-space: nowrap; flex-shrink: 0;        
+    -ms-overflow-style: none; scrollbar-width: none; cursor: grab; user-select: none;
 }
 .history-tabs::-webkit-scrollbar { display: none; }
 .history-tabs.dragging { cursor: grabbing; }
 
 .tab-btn {
-    background: transparent; border: none; color: #777;
-    padding: 15px 10px;
+    background: transparent; border: none; color: #777; padding: 15px 10px;
     font-family: 'Kanit', sans-serif; font-size: 15px; font-weight: 600;
     cursor: pointer; position: relative; transition: 0.2s;
 }
@@ -278,240 +319,49 @@ input[type="text"]:focus {
     width: 100%; height: 3px; background: #e4d6a7; border-radius: 3px 3px 0 0;
 }
 
-/* 6. พื้นที่แสดงรายชื่อ */
 .history-content-wrapper {
-    flex-grow: 1;         
-    overflow-y: auto;     
-    padding: 10px 0;
-    
-    scrollbar-width: thin;
-    scrollbar-color: #444 #1e1e24;
+    flex-grow: 1; overflow-y: auto; padding: 10px 0;
+    scrollbar-width: thin; scrollbar-color: #444 #1e1e24;
 }
-.history-content-wrapper::-webkit-scrollbar { width: 6px; }
-.history-content-wrapper::-webkit-scrollbar-track { background: #1e1e24; }
-.history-content-wrapper::-webkit-scrollbar-thumb { background: #555; border-radius: 4px; }
 
 .tab-content { display: none; }
 .tab-content.active { display: block; }
 
-/* 7. รายการชื่อ */
 .history-item {
-    padding: 12px 20px;
-    border-bottom: 1px solid #2f2f38;
-    display: flex;
-    justify-content: space-between; 
-    align-items: flex-start;        
-    font-size: 15px;
+    padding: 12px 20px; border-bottom: 1px solid #2f2f38;
+    display: flex; justify-content: space-between; align-items: flex-start;        
+    font-size: 15px; color: #eee; font-weight: 500;
 }
 .history-item:hover { background: rgba(255,255,255,0.02); }
-.history-item:last-child { border-bottom: none; }
-
-.history-item { color: #eee; font-weight: 500; }
-
 .history-item span {
-    text-align: right;
-    color: #999;
-    font-size: 14px;
-    font-weight: normal;
-    padding-left: 15px;
-    white-space: normal;
-    max-width: 50%;
-    word-break: break-word;
+    text-align: right; color: #999; font-size: 14px; font-weight: normal;
+    padding-left: 15px; white-space: normal; max-width: 50%; word-break: break-word;
 }
 
-/* --- แก้ไขการแสดงผลบนมือถือ (Mobile Fixes) --- */
-@media screen and (max-width: 768px) {
-    /* 1. ปรับปุ่ม History ให้เล็กลงและชิดขอบมากขึ้น */
-    .btn-history-toggle {
-        top: 10px !important;
-        right: 10px !important;
-        padding: 6px 12px !important;
-        font-size: 12px !important;
-        z-index: 1000;
-    }
-
-    /* 2. ดันชื่อรางวัล (Rank) ลงมาข้างล่าง ไม่ให้ชนปุ่ม */
-    #bannerDisplay {
-        margin-top: 40px !important; /* เว้นที่ว่างด้านบนให้ปุ่ม */
-        padding-top: 10px;
-    }
-
-    /* 3. ปรับขนาดตัวหนังสือชื่อรางวัลให้พอดีจอ ไม่ล้น */
-    #bannerDisplay h1 {
-        font-size: 24px !important; /* ลดขนาดฟอนต์ลง */
-        line-height: 1.2;
-        padding: 0 10px; /* กันชนขอบจอซ้ายขวา */
-    }
-}
-
-/* =============================================
-   ตั้งค่าสำหรับหน้าจอมือถือ (ความกว้างไม่เกิน 768px)
-   ============================================= */
-@media screen and (max-width: 768px) {
-
-    /* 1. ขยายชื่อผู้โชคดี (ตัวสีๆ) */
-    .result-grid h3 { 
-        font-size: 1.6rem !important; /* ปรับเลขนี้ให้ใหญ่ขึ้นตามชอบ (เช่น 1.6rem, 1.8rem) */
-        margin-bottom: 10px;          /* เพิ่มระยะห่างด้านล่างนิดหน่อย */
-    }
-    /* 2. ขยายรายละเอียด (สังกัด/ชั้นปี) */
-    .result-grid p {
-        font-size: 1rem !important;   /* ขนาดตัวหนังสือปกติ (ประมาณ 16px) */
-        line-height: 1.5;             /* เพิ่มระยะห่างบรรทัดให้อ่านง่าย */
-    }
-    /* 3. ขยายเลข ID ด้านบน (เลข 180, 22 ฯลฯ) */
-    /* หมายเหตุ: ถ้าใช้ class อื่นให้แก้ชื่อตรงนี้ (เช่น .card-header) */
-    .result-grid div:first-child { 
-        font-size: 1.2rem !important; 
-        padding: 10px 0;
-    }
-}
-
-/* =========================================
-   ปุ่มล้างแคช (มุมขวาบน)
-   ========================================= */
-.btn-clear-cache {
-    position: fixed;
-    z-index: 999; /* ให้น้อยกว่า History นิดนึง */
-    cursor: pointer;
-    border: none;
-    background: rgba(255, 71, 87, 0.9); /* สีแดงโปร่งแสงนิดๆ ดูหรู */
-    color: white;
-    border-radius: 20px;
-    font-family: 'Kanit', sans-serif;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    transition: all 0.3s ease;
-
-    /* 🖥️ ตำแหน่งใน PC: อยู่ใต้ปุ่ม History (ซึ่งมักจะอยู่ที่ Top 20-30px) */
-    top: 85px;  
-    right: 25px; 
-    
-    padding: 6px 15px;
-    font-size: 14px;
-    display: block; /* เริ่มต้นให้โชว์ก่อน */
-}
-
-.btn-clear-cache:hover {
-    transform: scale(1.05);
-    background: #ff6b81;
-}
-
-/* 📱 ตำแหน่งในมือถือ */
-@media screen and (max-width: 768px) {
-    .btn-clear-cache {
-        /* ขยับให้ชิดปุ่ม History ในมือถือ */
-        top: 55px !important; 
-        right: 10px !important;
-        padding: 4px 10px !important;
-        font-size: 11px !important;
-    }
-}
 /* =================================================================
-   ✅ ส่วนที่เพิ่มใหม่: WAITING SCREEN & SPINNER (วางต่อท้ายสุดไฟล์)
+   8. MOBILE RESPONSIVE
    ================================================================= */
-/* จัดระเบียบพื้นที่ปุ่ม/waiting */
-.action-area {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    margin-top: 20px;
-    min-height: 80px; /* กันหน้ากระตุก */
-}
-
-/* กล่องข้อความ Waiting */
-.waiting-box {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
-    color: rgba(255, 255, 255, 0.8);
-    animation: fadeIn 0.8s ease;
-}
-
-.waiting-box h3 {
-    margin: 0;
-    font-weight: 400;
-    letter-spacing: 2px;
-    font-size: clamp(1.2rem, 4vw, 1.5rem);
-    text-shadow: 0 0 10px rgba(0, 255, 136, 0.4);
-    color: #fff;
-}
-
-.waiting-box p {
-    margin: 0;
-    font-size: clamp(0.9rem, 3vw, 1rem);
-    color: #888;
-}
-
-/* ตัวหมุนๆ (Spinner) */
-.spinner {
-    width: 45px;
-    height: 45px;
-    border: 4px solid rgba(255, 255, 255, 0.1);
-    border-top: 4px solid #00ff88; /* สีเขียวนีออน */
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
-}
-
-/* อนิเมชั่นหมุน */
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* อนิเมชั่นค่อยๆ ปรากฏ */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* =========================================
-   ปุ่มล้างระบบ (Reset System) - Admin Only
-   ========================================= */
-.btn-reset-system {
-    position: fixed;
-    z-index: 999;
-    cursor: pointer;
-    border: none;
-    /* สีแดงเข้ม ให้ดูอันตราย */
-    background: rgba(220, 20, 60, 0.9); 
-    color: white;
-    border: 2px solid #ff4d4d;
-    border-radius: 20px;
-    font-family: 'Kanit', sans-serif;
-    box-shadow: 0 4px 15px rgba(255, 0, 0, 0.4);
-    transition: all 0.3s ease;
-    
-    /* ซ่อนไว้ก่อน เดี๋ยว JS มาเปิดให้ Admin */
-    display: none; 
-
-    /* ตำแหน่ง: อยู่ใต้ปุ่ม Update ลงมาอีก */
-    top: 130px;  
-    right: 25px; 
-    
-    padding: 8px 15px;
-    font-size: 14px;
-    font-weight: bold;
-}
-
-.btn-reset-system:hover {
-    transform: scale(1.1);
-    background: #ff0000;
-    box-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
-}
-
-/* ปรับตำแหน่งในมือถือ */
 @media screen and (max-width: 768px) {
-    .btn-reset-system {
-        top: 90px !important; 
-        right: 10px !important;
-        padding: 5px 10px !important;
-        font-size: 11px !important;
+    /* ปุ่มมุมขวาบน ปรับให้เล็กลง */
+    .btn-history-toggle {
+        top: 10px !important; right: 10px !important;
+        padding: 6px 12px !important; font-size: 12px !important;
     }
+    .btn-clear-cache {
+        top: 55px !important; right: 10px !important;
+        padding: 4px 10px !important; font-size: 11px !important;
+    }
+    .btn-reset-system {
+        top: 90px !important; right: 10px !important;
+        padding: 5px 10px !important; font-size: 11px !important;
+    }
+
+    /* ชื่อรางวัล */
+    #bannerDisplay { margin-top: 40px !important; padding-top: 10px; }
+    #bannerDisplay h1 { font-size: 24px !important; line-height: 1.2; padding: 0 10px; }
+
+    /* Result Cards */
+    .result-grid h3 { font-size: 1.6rem !important; margin-bottom: 10px; }
+    .result-grid p { font-size: 1rem !important; line-height: 1.5; }
+    .result-grid div:first-child { font-size: 1.2rem !important; padding: 10px 0; }
 }
-
-
-
-
