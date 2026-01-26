@@ -413,5 +413,21 @@ input[type="text"]:focus {
     transform: scale(1.05);
 }
 
+.current-btn {
+    background: linear-gradient(180deg, #00f2ff 0%, #0080ff 100%) !important;
+    border: 3px solid #b3f7ff !important;
+    color: #002040 !important;
+    font-size: 16px !important;
+    padding: 15px 40px !important;
+    margin-top: 15px;
+    box-shadow: 0 0 20px rgba(0, 242, 255, 0.4);
+    display: none; /* ซ่อนไว้ก่อน */
+}
+
+.current-btn:hover {
+    box-shadow: 0 0 30px rgba(0, 242, 255, 0.8);
+    transform: scale(1.05);
+}
+
 
 
