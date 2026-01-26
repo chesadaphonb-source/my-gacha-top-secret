@@ -604,8 +604,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
         console.log("Mode: Viewer");
     }
+
+   // ✅ ฟังก์ชันวาร์ปกลับมาหน้าสุ่มปัจจุบัน
+    function goToLatestSession() {
+    // ปิดหน้าจออื่นๆ เช่นหน้าสรุปผล (ถ้าเปิดค้างไว้)
+    const resultScreen = document.getElementById('resultScreen');
+    if (resultScreen) resultScreen.style.display = 'none';
+
+    // เปิดหน้าจอหลัก
+    const mainScreen = document.getElementById('mainScreen');
+    const container = document.querySelector('.container');
+    if (mainScreen) mainScreen.style.display = 'block';
+    if (container) container.style.opacity = 1;
+
+    // อัปเดตการแสดงผลของรางวัลล่าสุด
+    // (สมมติว่าคุณมีตัวแปรเก็บรางวัลปัจจุบัน เช่น currentRank)
+    updateDisplay(); 
+
+    console.log("🛰 Re-synced to current raffle session.");
+}
+
+    // ✅ อย่าลืมสั่งให้ Admin เห็นปุ่มนี้ตอนโหลดหน้าเว็บ
+   document.addEventListener('DOMContentLoaded', () => {
+       // ... โค้ดเดิมของคุณ ...
+       if (isAdminUser) {
+           const btnGoCurrent = document.getElementById('btnGoToCurrent');
+           if(btnGoCurrent) btnGoCurrent.style.display = 'inline-block';
+       }
+   });
     animate();
 });
+
 
 
 
