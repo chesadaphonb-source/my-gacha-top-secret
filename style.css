@@ -330,7 +330,7 @@ input[type="text"]:focus {
     font-size: 14px;
     font-weight: bold;
     border-radius: 30px;
-    margin-top: 40px;                /* เว้นห่างจากปุ่ม Start เยอะหน่อย */
+    margin: 40px auto 0 auto;         /* เว้นห่างจากปุ่ม Start เยอะหน่อย */
     cursor: pointer;
     font-family: 'Kanit', sans-serif;
     transition: all 0.3s;
@@ -345,3 +345,4 @@ input[type="text"]:focus {
     box-shadow: 0 0 20px rgba(255, 77, 77, 0.6); /* เรืองแสง */
     transform: scale(1.05);
 }
+
