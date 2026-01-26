@@ -316,7 +316,51 @@ input[type="text"]:focus {
     white-space: normal;
     max-width: 50%;
     word-break: break-word;
+    
+}
+/* --- Waiting Message (รอ Admin) --- */
+#msgWaiting {
+    /* ✅ จัดกึ่งกลางสมบูรณ์แบบ */
+    display: none; /* ซ่อนไว้ก่อน เดี๋ยว JS มาเปิดเป็น flex */
+    justify-content: center;
+    align-items: center;
+    flex-direction: row; /* เรียงแนวนอน */
+    gap: 15px; /* ระยะห่างระหว่างไอคอนกับข้อความ */
 
+    /* 🎨 ตกแต่งความสวยงาม */
+    margin-top: 30px;
+    padding: 15px 30px;
+    background: rgba(255, 255, 255, 0.05); /* พื้นหลังใสๆ */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* ขอบจางๆ */
+    border-radius: 50px; /* ทรงแคปซูล */
+    backdrop-filter: blur(5px); /* เบลอฉากหลัง */
+
+    /* 🅰️ ฟอนต์และสี */
+    color: #00d2ff; /* สีฟ้า Neon Sci-fi */
+    font-size: 18px;
+    font-weight: 500;
+    text-shadow: 0 0 10px rgba(0, 210, 255, 0.5); /* เงาเรืองแสง */
+    letter-spacing: 1px;
+
+    /* ✨ อนิเมชั่น */
+    animation: pulseGlow 2s infinite ease-in-out;
+}
+
+/* อนิเมชั่นหายใจวิบวับ */
+@keyframes pulseGlow {
+    0% { transform: scale(1); opacity: 0.8; box-shadow: 0 0 0 rgba(0, 210, 255, 0); }
+    50% { transform: scale(1.05); opacity: 1; box-shadow: 0 0 20px rgba(0, 210, 255, 0.3); }
+    100% { transform: scale(1); opacity: 0.8; box-shadow: 0 0 0 rgba(0, 210, 255, 0); }
+}
+
+/* ไอคอนหมุนๆ (ถ้ามีไอคอน <i class="...">) */
+#msgWaiting i {
+    animation: spinSlow 3s linear infinite;
+}
+
+@keyframes spinSlow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 /* =================================================================
@@ -345,4 +389,5 @@ input[type="text"]:focus {
     box-shadow: 0 0 20px rgba(255, 77, 77, 0.6); /* เรืองแสง */
     transform: scale(1.05);
 }
+
 
