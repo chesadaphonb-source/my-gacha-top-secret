@@ -31,8 +31,16 @@
     <div id="bannerDisplay" class="banner-display"></div>
     <div class="pool-count" id="poolCount">กำลังโหลด...</div>
     
-    <button class="btn-wish start-btn" onclick="startWish()">
+    <button id="btnStart" class="btn-wish start-btn" onclick="startWish()">
         ✦ START WISH ✦
+    </button>
+
+    <div id="msgWaiting" style="display:none; color: #aaa; margin-top: 20px; font-size: 18px;">
+        ⏳ รอ Admin กดสุ่มรางวัล...
+    </div>
+
+    <button id="btnResetSystem" class="btn-reset-system" onclick="resetGame()" style="display: none;">
+        ⚠️ ล้างระบบ (Reset System)
     </button>
 </div>
 
@@ -74,4 +82,5 @@
 <script type="module" src="script.js"></script>
 
 </body>
+
 </html>
