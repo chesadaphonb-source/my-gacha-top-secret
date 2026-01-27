@@ -389,46 +389,6 @@ input[type="text"]:focus {
 /* =================================================================
    ✅ ส่วนที่เพิ่ม: ปุ่ม Reset System (Admin Only)
    ================================================================= */
-.btn-reset-system {
-    background: rgba(0, 0, 0, 0.3); /* พื้นหลังโปร่งแสง */
-    border: 1px solid #ff4d4d;       /* ขอบสีแดง */
-    color: #ff4d4d;                  /* ตัวหนังสือสีแดง */
-    padding: 10px 25px;
-    font-size: 14px;
-    font-weight: bold;
-    border-radius: 30px;
-    margin: 40px auto 0 auto;         /* เว้นห่างจากปุ่ม Start เยอะหน่อย */
-    cursor: pointer;
-    font-family: 'Kanit', sans-serif;
-    transition: all 0.3s;
-    display: none;                   /* ซ่อนไว้ก่อน ให้ JS สั่งโชว์ */
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.btn-reset-system:hover {
-    background: #ff4d4d;             /* เมาส์ชี้แล้วพื้นหลังแดง */
-    color: white;                    /* ตัวหนังสือขาว */
-    box-shadow: 0 0 20px rgba(255, 77, 77, 0.6); /* เรืองแสง */
-    transform: scale(1.05);
-}
-
-.current-btn {
-    background: linear-gradient(180deg, #00f2ff 0%, #0080ff 100%) !important;
-    border: 3px solid #b3f7ff !important;
-    color: #002040 !important;
-    font-size: 16px !important;
-    padding: 15px 40px !important;
-    margin-top: 15px;
-    box-shadow: 0 0 20px rgba(0, 242, 255, 0.4);
-    display: none; /* ซ่อนไว้ก่อน */
-}
-
-.current-btn:hover {
-    box-shadow: 0 0 30px rgba(0, 242, 255, 0.8);
-    transform: scale(1.05);
-}
-
 /* --- อนิเมชั่นโดนดูดเข้าหาจุดศูนย์กลาง --- */
 .suck-in-animation {
     pointer-events: none; /* ห้ามกดปุ่มระหว่างโดนดูด */
@@ -488,6 +448,7 @@ input[type="text"]:focus {
     color: white !important;
     opacity: 1;
 }
+
 
 
 
