@@ -58,34 +58,34 @@ const isAdmin = urlParams.get('admin') === 'true';
 onValue(gameRef, (snapshot) => {
     const data = snapshot.val();
     if (data) {
-        // อัปเดตข้อมูลพื้นฐาน
+        // 1. อัปเดตข้อมูลพื้นฐาน (เหมือนเดิม)
         headers = data.headers || [];
         participants = data.participants || [];
         winnersHistory = data.history || {};
         currentTier = data.currentTier || 0;
 
-        // ถ้าไม่มีคน (คือยังไม่ได้ Load Data) ให้แสดงหน้า Setup
-        if (!participants || participants.length === 0) {
-             document.getElementById('setupContainer').style.display = 'block';
-             document.getElementById('mainScreen').style.display = 'none';
-             return; 
-        }
-
-        // ถ้าตั้งค่าเสร็จแล้ว ให้เปลี่ยนหน้า
+        // 2. ส่วนที่ต้อง "แก้" คือตรงนี้ครับ: 
+        // เราใช้ data.isSetupDone เป็นตัวตัดสินหลัก
         if (data.isSetupDone) {
+            // ถ้า Setup เสร็จแล้ว -> ปิดหน้าใส่ลิงก์ทิ้งไปเลย แล้วเปิดหน้าสุ่ม
             document.getElementById('setupContainer').style.display = 'none';
             document.getElementById('mainScreen').style.display = 'block';
-            updateUI();
+            updateUI(); 
+        } else {
+            // ถ้ายังไม่เสร็จ (หรือโดน Reset) -> ให้โชว์แค่หน้าใส่ลิงก์
+            document.getElementById('setupContainer').style.display = 'block';
+            document.getElementById('mainScreen').style.display = 'none';
+            return; // หยุดการทำงานส่วนล่างไว้ก่อนจนกว่าจะโหลดข้อมูลเสร็จ
         }
 
-        // --- ควบคุม Animation ตามสถานะ Server ---
+        // --- 3. ควบคุม Animation (ส่วนที่เหลือคงเดิม) ---
         if (data.status === 'WARPING') {
              if (!isWarping) { 
                  starColor = data.activeColor;
-                 runWarpEffect(); // เรียกฟังก์ชันวาร์ป
+                 runWarpEffect(); 
              }
         } else if (data.status === 'SHOW_RESULT') {
-            stopWarpEffect(); // หยุดวาร์ป
+            stopWarpEffect();
             const tier = prizes[currentTier];
             if(data.lastRoundWinners) {
                 showResults(data.lastRoundWinners, tier);
@@ -96,7 +96,6 @@ onValue(gameRef, (snapshot) => {
         }
     }
 });
-
 /* ==========================================================================
    ส่วนที่ 3: Logic การทำงาน (Admin สั่งงาน)
    ========================================================================== */
@@ -661,5 +660,6 @@ document.addEventListener('DOMContentLoaded', () => {
         animate();
     }
 });
+
 
 
