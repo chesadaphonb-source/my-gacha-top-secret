@@ -458,6 +458,14 @@ input[type="text"]:focus {
     background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); /* สีน้ำเงิน */
     border: 1px solid #4a90e2;
     margin-bottom: 10px;
+    display: inline-block; /* เพื่อให้คุมขนาดได้แม่นยำ */
+    font-family: 'Kanit', sans-serif; /* ให้ font เหมือนส่วนอื่น */
+    box-shadow: 0 0 15px rgba(30, 60, 114, 0.5); /* เพิ่มแสงเรืองรองสีน้ำเงิน */
+}
+
+.current-btn:hover {
+    transform: translateY(-2px); /* เวลาชี้แล้วปุ่มลอยขึ้นนิดนึง */
+    box-shadow: 0 0 20px rgba(74, 144, 226, 0.8);
 }
 
 .btn-reset-system {
@@ -478,5 +486,6 @@ input[type="text"]:focus {
     color: white;
     opacity: 1;
 }
+
 
 
