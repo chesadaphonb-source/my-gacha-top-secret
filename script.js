@@ -248,20 +248,34 @@ function updateUI() {
 function runWarpEffect() {
     const meteor = document.getElementById('meteor');
     const flash = document.getElementById('flashOverlay');
-    isWarping = true;
-    document.querySelector('.container').style.opacity = 0;
-    
-    if(document.querySelector('.btn-history-toggle')) 
-        document.querySelector('.btn-history-toggle').style.display = 'none';
-   
-    const btnUpdate = document.getElementById('btnUpdate');
-    if(btnUpdate) btnUpdate.style.display = 'none';
-
-    // ✅ เพิ่ม: ซ่อนปุ่ม Reset ตอนวาร์ปด้วย (เพื่อความสวยงาม)
+    const container = document.querySelector('.container');
+    const btnHistory = document.querySelector('.btn-history-toggle');
     const btnReset = document.getElementById('btnResetSystem');
-    if(btnReset) btnReset.style.display = 'none';
+    const btnUpdate = document.getElementById('btnUpdate');
 
-    if(meteor) { meteor.style.color = starColor; meteor.classList.add('meteor-falling'); }
+    isWarping = true;
+
+    // 🌪️ 1. ใส่เอฟเฟกต์ "โดนดูด" ให้กับทุกส่วนของ UI
+    if(container) container.classList.add('suck-in-animation');
+    if(btnHistory) btnHistory.classList.add('suck-in-animation');
+    if(btnReset) btnReset.classList.add('suck-in-animation');
+    if(btnUpdate) btnUpdate.classList.add('suck-in-animation');
+
+    // ⏳ 2. รอให้โดนดูดจนหายไป (0.8s) แล้วค่อยสั่งซ่อนจริงๆ เพื่อความชัวร์
+    setTimeout(() => {
+        if(container) container.style.opacity = 0;
+        if(btnHistory) btnHistory.style.display = 'none';
+        if(btnReset) btnReset.style.display = 'none';
+        if(btnUpdate) btnUpdate.style.display = 'none';
+    }, 800);
+
+    // ☄️ 3. เริ่มลูกไฟพุ่ง (Meteor) - ให้เริ่มหลังจากโดนดูดไปสักพัก
+    if(meteor) { 
+        meteor.style.color = starColor; 
+        meteor.classList.add('meteor-falling'); 
+    }
+
+    // ⚪ 4. แฟลชขาวตอนระเบิด
     if(flash) { 
         flash.style.background = starColor; 
         setTimeout(() => { flash.style.opacity = 1; }, 1500); 
@@ -329,17 +343,8 @@ function showResults(winners, tier) {
 
 function closeResult() {
     document.getElementById('resultScreen').style.display = 'none';
-    document.querySelector('.container').style.opacity = 1;
-    
-    if(document.querySelector('.btn-history-toggle'))
-        document.querySelector('.btn-history-toggle').style.display = 'block';
-
-    const btnUpdate = document.getElementById('btnUpdate');
-    if(btnUpdate) btnUpdate.style.display = 'block';
-
-    // ✅ เพิ่ม: โชว์ปุ่ม Reset กลับมา (ถ้าเป็น admin)
-    const btnReset = document.getElementById('btnResetSystem');
-    if(btnReset && isAdmin) btnReset.style.display = 'block';
+   
+    resetUIForNextWish();
 }
 
 /* --- History & Copy System --- */
@@ -574,68 +579,83 @@ function forceClearCache() {
     window.location.href = url.toString();
 }
 
-// ==========================================
-// ✅ ส่วนที่แก้ไข: เพิ่มการจัดการปุ่ม Reset System
-// ==========================================
-document.addEventListener('DOMContentLoaded', () => {
-    const btnStart = document.getElementById('btnStart');
-    const msgWaiting = document.getElementById('msgWaiting');
-    const controlBar = document.querySelector('.control-bar');
-    const btnReset = document.getElementById('btnResetSystem');
+/* ==========================================================================
+    ส่วนที่ 4: การจัดการ UI และระบบ Admin (Clean Version)
+   ========================================================================== */
 
-    if (isAdmin) {
-        // 👑 โหมด Admin
-        if(btnStart) btnStart.style.display = 'inline-block';
-        if(msgWaiting) msgWaiting.style.display = 'none';
-        if(controlBar) controlBar.style.display = 'flex';
-        
-        // ✅ เปิดโชว์ปุ่ม Reset ให้ Admin เห็น
-        if(btnReset) btnReset.style.display = 'block';
+// 🛰️ 1. ส่งออกฟังก์ชันให้ปุ่มใน HTML เรียกใช้งานได้ (สำคัญมาก!)
+window.resetUIForNextWish = resetUIForNextWish;
+window.goToLatestSession = goToLatestSession;
 
-        console.log("Mode: Admin");
-    } else {
-        // 👤 โหมดคนดู
-        if(btnStart) btnStart.style.display = 'none';
-        if(msgWaiting) msgWaiting.style.display = 'flex';
-        if(controlBar) controlBar.style.display = 'none';
-        
-        // 🔒 ซ่อนปุ่ม Reset ให้คนดู (กันเหนียว)
-        if(btnReset) btnReset.style.display = 'none';
-
-        console.log("Mode: Viewer");
-    }
-
-   // ✅ ฟังก์ชันวาร์ปกลับมาหน้าสุ่มปัจจุบัน
-    function goToLatestSession() {
-    // ปิดหน้าจออื่นๆ เช่นหน้าสรุปผล (ถ้าเปิดค้างไว้)
+// ✅ ฟังก์ชันวาร์ปกลับมาหน้าสุ่มปัจจุบัน
+function goToLatestSession() {
     const resultScreen = document.getElementById('resultScreen');
     if (resultScreen) resultScreen.style.display = 'none';
 
-    // เปิดหน้าจอหลัก
-    const mainScreen = document.getElementById('mainScreen');
     const container = document.querySelector('.container');
-    if (mainScreen) mainScreen.style.display = 'block';
-    if (container) container.style.opacity = 1;
+    if (container) {
+        container.style.display = 'block';
+        container.style.opacity = 1;
+    }
 
-    // อัปเดตการแสดงผลของรางวัลล่าสุด
-    // (สมมติว่าคุณมีตัวแปรเก็บรางวัลปัจจุบัน เช่น currentRank)
-    updateDisplay(); 
-
-    console.log("🛰 Re-synced to current raffle session.");
+    // เรียกฟังก์ชันอัปเดตหน้าจอหลัก (ใช้ชื่อ updateUI ตามส่วนที่ 3 ของคุณ)
+    updateUI(); 
+    console.log("🛰 Re-synced to current session.");
 }
 
-    // ✅ อย่าลืมสั่งให้ Admin เห็นปุ่มนี้ตอนโหลดหน้าเว็บ
-   document.addEventListener('DOMContentLoaded', () => {
-       // ... โค้ดเดิมของคุณ ...
-       if (isAdminUser) {
-           const btnGoCurrent = document.getElementById('btnGoToCurrent');
-           if(btnGoCurrent) btnGoCurrent.style.display = 'inline-block';
-       }
-   });
-    animate();
+// ✅ ฟังก์ชันคืนค่า UI (ล้างท่าโดนดูด + คืนร่างปุ่ม)
+function resetUIForNextWish() {
+    // 🌪️ 1. ล้าง Class อนิเมชั่น "โดนดูด" ออกให้หมด
+    const elements = document.querySelectorAll('.suck-in-animation');
+    elements.forEach(el => {
+        el.classList.remove('suck-in-animation');
+        el.style.opacity = 1;
+        el.style.transform = ''; // ล้างการหมุน/ย่อ
+        el.style.filter = '';    // ล้างความเบลอ
+    });
+
+    // 📺 2. คืนค่าหน้าจอหลัก
+    const container = document.querySelector('.container');
+    if(container) {
+        container.style.display = 'block';
+        container.style.opacity = 1;
+    }
+
+    // 👑 3. รีเฟรชปุ่ม Admin
+    refreshAdminUI();
+}
+
+// ✅ ฟังก์ชันคุมการเปิด-ปิดปุ่มตามสิทธิ์ (Admin/Viewer)
+function refreshAdminUI() {
+    const btnStart = document.getElementById('btnStart');
+    const msgWaiting = document.getElementById('msgWaiting');
+    const btnReset = document.getElementById('btnResetSystem');
+    const btnUpdate = document.getElementById('btnUpdate');
+    const btnGoCurrent = document.getElementById('btnGoToCurrent');
+    const btnHistory = document.querySelector('.btn-history-toggle');
+
+    if (isAdmin) {
+        if(btnStart) btnStart.style.display = 'inline-block';
+        if(msgWaiting) msgWaiting.style.display = 'none';
+        if(btnReset) btnReset.style.display = 'block';
+        if(btnUpdate) btnUpdate.style.display = 'block';
+        if(btnGoCurrent) btnGoCurrent.style.display = 'inline-block';
+        if(btnHistory) btnHistory.style.display = 'block';
+    } else {
+        if(btnStart) btnStart.style.display = 'none';
+        if(msgWaiting) msgWaiting.style.display = 'flex';
+        if(btnReset) btnReset.style.display = 'none';
+        if(btnUpdate) btnUpdate.style.display = 'none';
+        if(btnGoCurrent) btnGoCurrent.style.display = 'none';
+    }
+}
+
+// 🚀 รันระบบเมื่อโหลดหน้าเสร็จ
+document.addEventListener('DOMContentLoaded', () => {
+    refreshAdminUI();
+    
+    // เริ่มรันดาวพื้นหลัง
+    if (typeof animate === 'function') {
+        animate();
+    }
 });
-
-
-
-
-
