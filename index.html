@@ -28,24 +28,32 @@
 </div>
 
 <div class="container" id="mainScreen" style="display:none;">
-    <div id="bannerDisplay" class="banner-display"></div>
-    <div class="pool-count" id="poolCount">กำลังโหลด...</div>
+    
+    <div class="glass-panel">
+        <div id="bannerDisplay" class="banner-display"></div>
+        <div class="pool-count" id="poolCount">กำลังโหลด...</div>
         
-    <button id="btnGoToCurrent" class="btn-wish current-btn" onclick="goToLatestSession()" style="display:none;">
-    ⌖ RE-SYNC CURRENT RANK
-    </button>
-        
-    <button id="btnStart" class="btn-wish start-btn" onclick="startWish()">
-        ✦ START WISH ✦
-    </button>
-
-    <div id="msgWaiting">
-        SYSTEM STANDBY : รอคำสั่งจาก ADMIN
+        <div class="action-area">
+            <button id="btnStart" class="btn-wish start-btn" onclick="startWish()">
+                ✦ START WISH ✦
+            </button>
+        </div>
     </div>
 
-    <button id="btnResetSystem" class="btn-reset-system" onclick="resetGame()">
-        ⚠️ ล้างระบบ (RESET SYSTEM)
-    </button>
+    <div class="admin-controls">
+        <button id="btnGoToCurrent" class="btn-admin" onclick="goToLatestSession()" style="display:none;">
+            ⌖ Re-Sync Rank
+        </button>
+
+        <div id="msgWaiting">
+            SYSTEM STANDBY : รอคำสั่งจาก ADMIN
+        </div>
+
+        <button id="btnResetSystem" class="btn-admin btn-danger" onclick="resetGame()">
+            ⚠️ Reset System
+        </button>
+    </div>
+
 </div>
 
 <div id="resultScreen">
@@ -88,5 +96,6 @@
 </body>
 
 </html>
+
 
 
