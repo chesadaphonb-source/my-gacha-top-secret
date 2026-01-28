@@ -356,3 +356,50 @@ input[type="text"]:focus {
     100% { transform: scale(0) rotate(720deg); filter: blur(20px); opacity: 0; }
 }
 .suck-in-animation { pointer-events: none; animation: blackHoleSuck 0.8s ease-in forwards; }
+
+/* --- ส่วน Waiting Message (ปรับปรุงใหม่) --- */
+#msgWaiting {
+    display: none; /* JS จะเปลี่ยนเป็น flex เมื่อถึงเวลา */
+    justify-content: center;
+    align-items: center;
+    gap: 15px; /* ระยะห่างระหว่างวงแหวนกับข้อความ */
+    
+    padding: 15px 30px;
+    margin-top: 20px;
+    
+    font-family: 'Courier New', monospace; 
+    color: #00f2ff;
+    font-size: 1.1rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+    
+    background: rgba(0, 20, 40, 0.6);
+    border: 1px solid #00f2ff;
+    border-radius: 4px;
+    box-shadow: 0 0 15px rgba(0, 242, 255, 0.1);
+}
+
+/* วงแหวนโหลดหมุนๆ (Mini Loader) */
+.mini-loader {
+    width: 18px; height: 18px;
+    border: 2px solid rgba(0, 242, 255, 0.3);
+    border-top: 2px solid #00f2ff;
+    border-radius: 50%;
+    animation: miniSpin 1s linear infinite;
+}
+
+@keyframes miniSpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* อนิเมชั่นข้อความกระพริบ */
+.blink-text-soft {
+    animation: textPulse 1.5s infinite alternate;
+}
+
+@keyframes textPulse {
+    from { opacity: 0.6; }
+    to { opacity: 1; }
+}
+
