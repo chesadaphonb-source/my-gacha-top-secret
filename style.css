@@ -449,6 +449,86 @@ input[type="text"]:focus {
     opacity: 1;
 }
 
+/* =================================================================
+   ✨ NEW UI: Glassmorphism & Clean Layout
+   ================================================================= */
+
+/* 1. กรอบกระจกใสๆ รองหลังเนื้อหา */
+.glass-panel {
+    background: rgba(255, 255, 255, 0.03); /* สีขาวจางมากๆ */
+    backdrop-filter: blur(12px);           /* เบลอฉากหลัง */
+    -webkit-backdrop-filter: blur(12px);   /* สำหรับ Safari */
+    border: 1px solid rgba(255, 255, 255, 0.1); /* ขอบบางๆ */
+    border-radius: 24px;
+    padding: 40px 20px;
+    margin-bottom: 30px; /* เว้นระยะห่างจากปุ่ม Admin ด้านล่าง */
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    
+    /* จัดกึ่งกลาง */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+/* 2. พื้นที่ปุ่ม START (ทำให้ปุ่มดูมีพื้นที่หายใจ) */
+.action-area {
+    margin-top: 15px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+/* 3. แถบควบคุม Admin (ย้ายไปไว้ล่างสุด + ทำให้เล็กลง) */
+.admin-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;      /* ระยะห่างระหว่างปุ่ม Admin */
+    opacity: 0.6;   /* จางลงหน่อย เพื่อไม่ให้แย่งสายตา */
+    transition: opacity 0.3s ease;
+}
+
+.admin-controls:hover {
+    opacity: 1; /* เมาส์ชี้แล้วค่อยชัด */
+}
+
+/* 4. สไตล์ปุ่ม Admin แบบใหม่ (ปุ่มผี/Ghost Button) */
+.btn-admin {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #aaa;
+    font-family: 'Kanit', sans-serif;
+    font-size: 12px;
+    padding: 8px 16px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.btn-admin:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border-color: #fff;
+    transform: translateY(-2px);
+}
+
+/* ปุ่ม Reset สีแดงเฉพาะตัว */
+.btn-admin.btn-danger:hover {
+    border-color: #ff4d4d;
+    color: #ff4d4d;
+    background: rgba(255, 77, 77, 0.1);
+    box-shadow: 0 0 15px rgba(255, 77, 77, 0.2);
+}
+
+/* ปรับระยะห่างชื่อรางวัลให้สมดุล */
+.banner-display h1 {
+    margin-bottom: 10px !important;
+}
+
+
 
 
 
