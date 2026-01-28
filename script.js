@@ -219,11 +219,18 @@ function performRaffle() {
     saveToSheet(winners, tier.name);
 }
 
-function nextRound() { 
-    if(!isAdmin) return;
+function nextRound() {
+    if (!isAdmin) return;
+    
+    // ปิดหน้าผลรางวัล
+    document.getElementById('resultScreen').style.display = 'none';
+
+    // ส่งคำสั่งเปลี่ยน Tier ขึ้น Firebase
+    // ระบบจะเปลี่ยนหน้าจอ User กลับไปหน้าสุ่มให้อัตโนมัติเพราะ onValue ทำงานอยู่
     update(gameRef, {
         status: 'IDLE',
-        currentTier: currentTier + 1
+        currentTier: currentTier + 1,
+        activeColor: '#fff' 
     });
 }
 
@@ -360,6 +367,18 @@ function showResults(winners, tier) {
     });
 
     document.getElementById('resultScreen').style.display = 'flex';
+    const btnNext = document.getElementById('btnNextPrize'); // เรียกหาปุ่มจาก ID ที่เราเพิ่งตั้ง
+    
+    if (btnNext) {
+        // ถ้าเป็น Admin และ "ไม่ใช่" รางวัลสุดท้าย -> ให้โชว์ปุ่ม
+        // (prizes.length - 1 คือ index ของรางวัลสุดท้าย)
+        if (isAdmin && currentTier < prizes.length - 1) {
+            btnNext.style.display = 'inline-block';
+        } else {
+            // ถ้าเป็น User หรือ แจกครบแล้ว -> ซ่อนปุ่ม
+            btnNext.style.display = 'none';
+        }
+    }
 }
 
 function closeResult() {
@@ -531,3 +550,4 @@ if (canvas) {
     }
     animate();
 }
+
