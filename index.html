@@ -1,33 +1,33 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-        <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wish System</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cosmic Wish System</title>
 
-     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;600;800&family=Courier+New:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-
 </head>
 <body>
-  <div id="globalLoader" class="loading-overlay">
-      <div class="loader-content">
-          <div class="planet-spinner">
-              <div class="ring"></div>
-              <div class="planet"></div>
-          </div>
-          <div class="loading-text">ESTABLISHING LINK...</div>
-      </div>
-  </div>
 
-<div id="audienceStandby" class="standby-screen" style="display:none;">
-    <div class="radar-container">
-        <div class="radar-sweep"></div>
-        <div class="radar-grid"></div>
+    <div id="globalLoader" class="loading-overlay">
+        <div class="loader-content">
+            <div class="planet-spinner">
+                <div class="ring"></div>
+                <div class="planet"></div>
+            </div>
+            <div class="loading-text">ESTABLISHING LINK...</div>
+        </div>
     </div>
-    <h2 class="blink-text">WAITING FOR MISSION CONTROL</h2>
-    <p>ระบบกำลังรอสัญญาณเริ่มกิจกรรมจาก Admin...</p>
-</div>
+
+    <div id="audienceStandby" class="standby-screen" style="display:none;">
+        <div class="radar-container">
+            <div class="radar-sweep"></div>
+            <div class="radar-grid"></div>
+        </div>
+        <h2 class="blink-text">WAITING FOR MISSION CONTROL</h2>
+        <p>ระบบกำลังรอสัญญาณเริ่มกิจกรรมจาก Admin...</p>
+    </div>
         
     <canvas id="starCanvas"></canvas>
     <div id="flashOverlay"></div>
@@ -35,88 +35,86 @@
 
     <div class="container" id="setupContainer">
         <div class="setup-box">
-            <h1 class="gold-text">💫Wish System</h1>
-            <p class="sub-text">เชื่อมต่อ Google Sheet เพื่อเริ่มการสุ่ม</p>
+            <h1 class="gold-text">💫 Wish System</h1>
+            <p class="sub-text">Connecting to Galactic Database...</p>
         
-        <input type="text" id="sheetUrl" 
-               value="https://docs.google.com/spreadsheets/d/e/2PACX-1vSOJsl1kh0r-xTWTqrXExZZfsuaZSiGUgGa9P8swt1NIIkULgR8mhbHedmDeZpq888KAZmqHAwVNXDY/pub?output=csv" 
-               placeholder="วางลิงก์ CSV ตรงนี้...">
-        <br>
-        <button class="btn-wish" onclick="loadData()">Load Data</button>
+            <input type="text" id="sheetUrl" 
+                   value="https://docs.google.com/spreadsheets/d/e/2PACX-1vSOJsl1kh0r-xTWTqrXExZZfsuaZSiGUgGa9P8swt1NIIkULgR8mhbHedmDeZpq888KAZmqHAwVNXDY/pub?output=csv" 
+                   placeholder="วางลิงก์ CSV ตรงนี้...">
+            <br>
+            <button class="btn-wish" onclick="loadData()">Load Data</button>
+        </div>
     </div>
-</div>
 
-<div class="container" id="mainScreen" style="display:none;">
+    <div class="container" id="mainScreen" style="display:none;">
     
-    <div class="glass-panel">
-        <div id="bannerDisplay" class="banner-display"></div>
-        <div class="pool-count" id="poolCount">กำลังโหลด...</div>
-        
-        <div class="action-area">
-            <button id="btnStart" class="btn-wish start-btn" onclick="startWish()">
-                ✦ START WISH ✦
+        <div class="glass-panel">
+            <div id="bannerDisplay" class="banner-display"></div>
+            <div class="pool-count" id="poolCount">System Initializing...</div>
+            
+            <div class="action-area">
+                <button id="btnStart" class="btn-wish start-btn" onclick="startWish()">
+                    ✦ START WISH ✦
+                </button>
+            </div>
+        </div>
+
+        <div class="admin-controls">
+             <button id="btnGoToCurrent" class="btn-admin btn-resync" onclick="goToLatestSession()" style="display:none;">
+                ⌖ Re-Sync Rank
+            </button>
+
+            <div id="msgWaiting">
+                SYSTEM STANDBY : รอคำสั่งจาก ADMIN
+            </div>
+
+            <button id="btnResetSystem" class="btn-admin btn-danger" onclick="resetGame()">
+                ⚠️ Reset System
             </button>
         </div>
+
     </div>
 
-    <div class="admin-controls">
-        <button id="btnGoToCurrent" class="btn-admin" onclick="goToLatestSession()" style="display:none;">
-            ⌖ Re-Sync Rank
-        </button>
-
-        <div id="msgWaiting">
-            SYSTEM STANDBY : รอคำสั่งจาก ADMIN
+    <div id="resultScreen">
+        <div class="result-header">
+            <h1 id="resultTitle">Rewards</h1>
         </div>
 
-        <button id="btnResetSystem" class="btn-admin btn-danger" onclick="resetGame()">
-            ⚠️ Reset System
-        </button>
-    </div>
+        <div class="result-content">
+            <div class="result-grid" id="resultGrid"></div>
+        </div>
 
-</div>
-
-<div id="resultScreen">
-    <div class="result-header">
-        <h1 id="resultTitle">Rewards</h1>
-    </div>
-
-    <div class="result-content">
-        <div class="result-grid" id="resultGrid"></div>
-    </div>
-
-    <div class="control-bar">
-        <button class="btn-secondary" onclick="closeResult()">
-            ❮ ย้อนกลับ
-        </button>
-        <button id="btnNextPrize" class="btn-next" onclick="nextRound()">
-            รางวัลถัดไป ❯
-        </button>
+        <div class="control-bar">
+            <button class="btn-secondary" onclick="closeResult()">
+                ❮ ย้อนกลับ
+            </button>
+            <button id="btnNextPrize" class="btn-next" onclick="nextRound()">
+                รางวัลถัดไป ❯
+            </button>
+        </div> 
     </div> 
-</div> 
 
     <button class="btn-history-toggle" onclick="toggleHistory()">
-    📜 History
+        📜 History
     </button>
 
-<div id="historyModal" class="history-modal">
-    <div class="history-content">
-        <div class="history-header">
-            <h2>✨ Hall of Fame ✨</h2>
-            <button class="close-btn" onclick="toggleHistory()">×</button>
-        </div>
-        <div id="historyList" class="history-body">
-            <p style="text-align:center; color:#888;">ยังไม่มีผู้ได้รับรางวัล</p>
+    <div id="historyModal" class="history-modal">
+        <div class="history-content">
+            <div class="history-header">
+                <h2>✨ Hall of Fame ✨</h2>
+                <button class="close-btn" onclick="toggleHistory()">×</button>
+            </div>
+
+            <div class="history-tabs" id="historyTabs">
+                </div>
+
+            <div id="historyList" class="history-content-wrapper">
+                <p style="text-align:center; color:#888; margin-top:20px;">ยังไม่มีข้อมูลผู้โชคดี</p>
+            </div>
         </div>
     </div>
-</div>
 
-<script type="module" src="script.js"></script>
+    <script type="module" src="script.js"></script>
 
 </body>
-
 </html>
-
-
-
-
-
