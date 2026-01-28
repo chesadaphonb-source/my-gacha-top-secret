@@ -561,4 +561,33 @@ if (canvas) {
     animate();
 }
 
+// ฟังก์ชันปรับหน้าจอตามสถานะ (Admin หรือ คนดู)
+function updateUIState(isAdmin) {
+    const startBtnContainer = document.getElementById('startBtnContainer');
+    const adminPanel = document.getElementById('adminPanel'); // กลุ่มปุ่ม Re-Sync & Reset
+    const msgWaiting = document.getElementById('msgWaiting');
+
+    if (isAdmin) {
+        // --- ถ้าเป็น ADMIN ---
+        // 1. โชว์ปุ่ม Start
+        if (startBtnContainer) startBtnContainer.style.display = 'flex';
+        // 2. โชว์ปุ่มควบคุม (Reset/Re-Sync)
+        if (adminPanel) adminPanel.style.display = 'flex';
+        // 3. ซ่อนข้อความ Waiting
+        if (msgWaiting) msgWaiting.style.display = 'none';
+        
+    } else {
+        // --- ถ้าเป็น AUDIENCE (คนดู) ---
+        // 1. ซ่อนปุ่ม Start
+        if (startBtnContainer) startBtnContainer.style.display = 'none';
+        // 2. ซ่อนปุ่มควบคุมทั้งหมด
+        if (adminPanel) adminPanel.style.display = 'none';
+        // 3. โชว์ข้อความ Waiting พร้อมตัวหมุนๆ
+        if (msgWaiting) {
+            msgWaiting.style.display = 'flex'; 
+            // msgWaiting จะแสดงผลเป็น Flex เพื่อจัดตัวหมุนให้อยู่กึ่งกลางกับข้อความ
+        }
+    }
+}
+
 
