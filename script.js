@@ -83,10 +83,26 @@ onValue(gameRef, (snapshot) => {
         return;
     }
 
-    // 3. ถ้า Setup เสร็จแล้ว -> เข้าสู่หน้าเกม
+   // 3. ถ้า Setup เสร็จแล้ว -> เข้าสู่หน้าเกม
     if(setupContainer) setupContainer.style.display = 'none';
-    if(audienceStandby) audienceStandby.style.display = 'none';
-    if(mainScreen) mainScreen.style.display = 'block';
+
+    // --- แก้ไขใหม่: แยกคนดูกับแอดมิน ---
+    if (isAdmin) {
+        // 👑 แอดมิน: ให้เข้าหน้ากดปุ่มเสมอ
+        if(audienceStandby) audienceStandby.style.display = 'none';
+        if(mainScreen) mainScreen.style.display = 'block';
+    } else {
+        // 🍿 คนดู: เช็คสถานะเกมก่อน
+        // ถ้าสถานะเป็น 'IDLE' (ยังไม่กดเริ่ม) -> ให้ดูเรดาร์รอ
+        if (state.status === 'IDLE') {
+            if(audienceStandby) audienceStandby.style.display = 'flex'; // โชว์เรดาร์
+            if(mainScreen) mainScreen.style.display = 'none';           // ซ่อนหน้าหลัก
+        } else {
+            // ถ้าสถานะเป็น 'WARPING' หรือ 'SHOW_RESULT' -> ให้ดูอนิเมชั่น/ผลรางวัล
+            if(audienceStandby) audienceStandby.style.display = 'none';
+            if(mainScreen) mainScreen.style.display = 'block';
+        }
+    }
 
     // อัปเดตข้อมูล Local
     participants = state.participants || [];
@@ -575,3 +591,4 @@ if (canvas) {
     }
     animate();
 }
+
