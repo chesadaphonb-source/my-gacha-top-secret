@@ -308,7 +308,7 @@ input[type="text"]:focus {
 /* Standby Radar */
 .standby-screen {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.8); z-index: var(--z-content);
+    background: rgba(0,0,0,0.8); z-index: 50;
     display: flex; flex-direction: column; justify-content: center; align-items: center;
 }
 .radar-container {
@@ -355,7 +355,23 @@ input[type="text"]:focus {
     50% { transform: scale(0.5) rotate(180deg); filter: blur(4px); opacity: 0.5; }
     100% { transform: scale(0) rotate(720deg); filter: blur(20px); opacity: 0; }
 }
-.suck-in-animation { pointer-events: none; animation: blackHoleSuck 0.8s ease-in forwards; }
+
+.suck-in-animation {
+    animation: suckInSimple 0.8s forwards ease-in;
+}
+
+@keyframes suckInSimple {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+        filter: blur(0px);
+    }
+    100% {
+        transform: scale(0); /* แค่ย่อให้เล็กสุด ไม่ต้องหมุน */
+        opacity: 0;
+        filter: blur(10px);
+    }
+}
 
 /* --- ส่วน Waiting Message (ปรับปรุงใหม่) --- */
 #msgWaiting {
@@ -402,4 +418,5 @@ input[type="text"]:focus {
     from { opacity: 0.6; }
     to { opacity: 1; }
 }
+
 
