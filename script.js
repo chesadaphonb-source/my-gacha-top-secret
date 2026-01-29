@@ -73,7 +73,7 @@ onValue(gameRef, (snapshot) => {
     if (!state || !state.isSetupDone) {
         if (isAdmin) {
             if(setupContainer) setupContainer.style.display = 'block';
-            if(mainScreen) mainScreen.style.display = 'none';
+            if(mainScreen) mainScreen.style.display = 'block';
             if(audienceStandby) audienceStandby.style.display = 'none';
         } else {
             if(setupContainer) setupContainer.style.display = 'none';
@@ -591,4 +591,5 @@ if (canvas) {
     }
     animate();
 }
+
 
