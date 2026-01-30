@@ -1,256 +1,135 @@
-/* =================================================================
-   GLOBAL CONFIG & DOM ELEMENTS
-   ================================================================= */
-const DOM = {
-    starCanvas: document.getElementById('starCanvas'),
-    meteor: document.getElementById('meteor'),
-    setupBox: document.querySelector('.setup-box'),
-    loader: document.querySelector('.loading-overlay'),
-    planetSpinner: document.querySelector('.planet-spinner .planet'), // ตัวดาวที่จะเปลี่ยนสี
-    loadingText: document.querySelector('.loading-text'),
-    resultScreen: document.getElementById('resultScreen'),
-    resultGrid: document.querySelector('.result-grid'),
-    historyModal: document.querySelector('.history-modal'),
-    historyList: document.getElementById('historyList'),
-    inputs: {
-        name: document.getElementById('inputName'),
-        wish: document.getElementById('inputWish')
-    }
-};
+/* effects.js - Hyperdrive Version */
 
-// ฐานข้อมูลผลลัพธ์ (ตัวอย่าง: คุณสามารถแก้ตรงนี้เพื่อเปลี่ยนคำทำนาย/ของรางวัล)
-const MOCK_RESULTS = [
-    { title: "สำเร็จแน่นอน!", sub: "ความพยายามของคุณจะส่งผลในเร็ววัน", type: "good" },
-    { title: "มีโอกาสสูง", sub: "ดวงดาวกำลังเรียงตัวเข้าข้างคุณ", type: "good" },
-    { title: "รออีกนิด", sub: "จังหวะเวลายังไม่ใช่ ตอนนี้ให้เตรียมตัวไว้", type: "neutral" },
-    { title: "ปาฏิหาริย์", sub: "สิ่งที่ขอจะเกิดขึ้นแบบที่คุณไม่คาดคิด!", type: "rare" },
-    { title: "ต้องพยายามเพิ่ม", sub: "ดวงช่วย 10% อีก 90% คือฝีมือคุณ", type: "hard" }
-];
+const canvas = document.getElementById('starCanvas');
+const ctx = canvas.getContext('2d');
 
-/* =================================================================
-   1. BACKGROUND: STAR FIELD & METEOR
-   ================================================================= */
-function initStars() {
-    const ctx = DOM.starCanvas.getContext('2d');
-    let width, height, stars = [];
+let width, height;
+let stars = [];
+let starSpeed = 2; // ความเร็วปกติ
+let targetSpeed = 2;
+let isWarping = false;
 
-    function resize() {
-        width = window.innerWidth;
-        height = window.innerHeight;
-        DOM.starCanvas.width = width;
-        DOM.starCanvas.height = height;
-        createStars();
+// ตั้งค่าขนาดจอ
+function resize() {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resize);
+resize();
+
+// Class สร้างดาว
+class Star {
+    constructor() {
+        this.reset(true);
     }
 
-    function createStars() {
-        stars = [];
-        for (let i = 0; i < 200; i++) {
-            stars.push({
-                x: Math.random() * width,
-                y: Math.random() * height,
-                r: Math.random() * 1.5,
-                a: Math.random() // alpha (opacity)
-            });
+    reset(initial = false) {
+        // x, y คือตำแหน่งบนหน้าจอ
+        // z คือความลึก (ไกล = ค่ามาก, ใกล้ = ค่าน้อย)
+        this.x = (Math.random() - 0.5) * width * 2;
+        this.y = (Math.random() - 0.5) * height * 2;
+        this.z = initial ? Math.random() * width : width;
+        this.pz = this.z; // ตำแหน่งก่อนหน้า (เอาไว้วาดหางดาว)
+        this.size = Math.random() * 2; // ขนาดดาวสุ่มๆ
+    }
+
+    update() {
+        // ขยับดาวเข้ามาหาหน้าจอ
+        this.z -= starSpeed;
+
+        // ถ้าดาววิ่งเลยหน้าจอ (z < 1) ให้รีเซ็ตไปข้างหลังใหม่
+        if (this.z < 1) {
+            this.reset();
+            this.z = width;
+            this.pz = this.z;
         }
     }
 
-    function draw() {
-        ctx.clearRect(0, 0, width, height);
-        ctx.fillStyle = "white";
-        stars.forEach(star => {
-            ctx.globalAlpha = star.a;
-            ctx.beginPath();
-            ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
-            ctx.fill();
-        });
-        requestAnimationFrame(draw);
-    }
+    draw() {
+        // สูตรแปลง 3D เป็น 2D
+        let sx = (this.x / this.z) * width + width / 2;
+        let sy = (this.y / this.z) * height + height / 2;
 
-    window.addEventListener('resize', resize);
-    resize();
-    draw();
-}
+        // สูตรหาตำแหน่งเก่า (เพื่อลากเส้นหาง)
+        let px = (this.x / this.pz) * width + width / 2;
+        let py = (this.y / this.pz) * height + height / 2;
 
-// ระบบดาวตก (สุ่มเวลาตก)
-function startMeteorShower() {
-    function shootMeteor() {
-        // สุ่มตำแหน่งเริ่มและมุมตก
-        const startX = Math.random() * window.innerWidth;
-        const startY = Math.random() * (window.innerHeight / 2); // ตกจากครึ่งบน
+        this.pz = this.z;
+
+        // คำนวณความสว่าง (ใกล้ = สว่าง)
+        let opacity = (1 - this.z / width);
+        if(isWarping) opacity = 0.8; // ตอน Warp ให้สว่างขึ้น
+
+        ctx.beginPath();
+        ctx.moveTo(px, py); // จุดเก่า
+        ctx.lineTo(sx, sy); // จุดใหม่
         
-        DOM.meteor.style.left = startX + 'px';
-        DOM.meteor.style.top = startY + 'px';
+        // ถ้า Warp ให้เป็นเส้นยาวๆ สีขาว/ฟ้า
+        if (isWarping) {
+            ctx.strokeStyle = `rgba(200, 230, 255, ${opacity})`;
+            ctx.lineWidth = this.size * (starSpeed / 10); // ยิ่งเร็วยิ่งเส้นใหญ่
+        } else {
+            // ถ้าปกติ ให้เป็นจุดๆ หรือเส้นสั้นๆ
+            ctx.strokeStyle = `rgba(255, 255, 255, ${opacity})`;
+            ctx.lineWidth = this.size;
+        }
         
-        // เริ่มอนิเมชัน
-        DOM.meteor.classList.remove('meteor-falling');
-        void DOM.meteor.offsetWidth; // Trigger reflow
-        DOM.meteor.classList.add('meteor-falling');
-
-        // สุ่มเวลาครั้งถัดไป (5 - 15 วินาที)
-        const nextTime = Math.random() * 10000 + 5000;
-        setTimeout(shootMeteor, nextTime);
+        ctx.stroke();
     }
-    shootMeteor();
 }
 
-/* =================================================================
-   2. CORE LOGIC: WISHING & LOADING
-   ================================================================= */
-function startWish() {
-    const name = DOM.inputs.name.value.trim();
-    const wish = DOM.inputs.wish.value.trim();
-
-    if (!name || !wish) {
-        alert("กรุณากรอกชื่อและคำอธิษฐานก่อนส่งดวงดาวครับ ✨");
-        return;
-    }
-
-    // 1. ซ่อนหน้า Setup
-    DOM.setupBox.style.display = 'none';
-
-    // 2. สุ่มดาวเคราะห์สำหรับ Loading (Saturn, Ice, Magma, Cyber)
-    const planetTypes = ['planet-saturn', 'planet-ice', 'planet-magma', 'planet-cyber'];
-    const randomPlanet = planetTypes[Math.floor(Math.random() * planetTypes.length)];
-    
-    // ลบคลาสเก่าออกก่อน แล้วใส่คลาสใหม่
-    DOM.planetSpinner.className = 'planet'; 
-    DOM.planetSpinner.classList.add(randomPlanet);
-
-    // 3. แสดง Loading Screen
-    DOM.loader.style.opacity = '1';
-    DOM.loader.style.zIndex = '9999'; // ให้แน่ใจว่าบังทุกอย่าง
-    DOM.loader.style.display = 'flex'; // แก้จาก CSS เดิมที่อาจซ่อนไว้
-
-    // เปลี่ยนข้อความ Loading
-    const loadingTexts = ["กำลังเชื่อมต่อจักรวาล...", "อ่านค่ากลุ่มดาว...", "คำนวณความเป็นไปได้...", "ส่งคำขอไปยังกาแล็กซี..."];
-    let textIndex = 0;
-    const textInterval = setInterval(() => {
-        DOM.loadingText.innerText = loadingTexts[textIndex % loadingTexts.length];
-        textIndex++;
-    }, 800);
-
-    // 4. จำลองเวลาโหลด (3 วินาที) แล้วแสดงผล
-    setTimeout(() => {
-        clearInterval(textInterval);
-        showResult(name, wish);
-    }, 3000);
+// สร้างดาว 500 ดวง
+for (let i = 0; i < 500; i++) {
+    stars.push(new Star());
 }
 
-/* =================================================================
-   3. RESULT & HISTORY
-   ================================================================= */
-function showResult(name, wish) {
-    // ซ่อน Loader
-    DOM.loader.style.opacity = '0';
-    setTimeout(() => { DOM.loader.style.display = 'none'; }, 500);
+// ลูปอนิเมชั่น
+function animate() {
+    // เคลียร์หน้าจอ (ทำจางๆ เพื่อให้เกิด Motion Blur นิดๆ)
+    ctx.fillStyle = "rgba(10, 10, 14, 0.4)"; 
+    ctx.fillRect(0, 0, width, height);
 
-    // สุ่มผลลัพธ์
-    const result = MOCK_RESULTS[Math.floor(Math.random() * MOCK_RESULTS.length)];
+    // ปรับความเร็วแบบนุ่มนวล (Lerp)
+    starSpeed += (targetSpeed - starSpeed) * 0.1;
 
-    // สร้าง Card HTML
-    const cardHTML = `
-        <div class="card">
-            <div class="card-header">RESULT</div>
-            <div class="card-body">
-                <div class="info-main" style="color:var(--gold)">${result.title}</div>
-                <div class="info-sub">${result.sub}</div>
-                <hr style="width:80%; border-color:#444; margin: 10px auto;">
-                <div class="info-sub">คุณ: ${name}</div>
-                <div class="info-sub" style="font-style:italic">"${wish}"</div>
-            </div>
-        </div>
-    `;
-
-    DOM.resultGrid.innerHTML = cardHTML;
-    
-    // แสดงหน้าผลลัพธ์
-    DOM.resultScreen.style.display = 'flex';
-
-    // บันทึกลงประวัติ
-    saveHistory(name, wish, result.title);
-}
-
-function resetApp() {
-    // รีเซ็ตหน้าจอเพื่อเริ่มใหม่
-    DOM.resultScreen.style.display = 'none';
-    DOM.setupBox.style.display = 'block'; // หรือ flex ตามโครงสร้างเดิม
-    DOM.inputs.wish.value = ''; // ล้างคำขอ
-}
-
-/* =================================================================
-   4. HISTORY SYSTEM (LocalStorage)
-   ================================================================= */
-function saveHistory(name, wish, result) {
-    let history = JSON.parse(localStorage.getItem('wishHistory')) || [];
-    const timestamp = new Date().toLocaleTimeString('th-TH');
-    
-    history.unshift({ name, wish, result, timestamp }); // เพิ่มล่าสุดไว้บนสุด
-    if(history.length > 50) history.pop(); // เก็บแค่ 50 รายการ
-
-    localStorage.setItem('wishHistory', JSON.stringify(history));
-    renderHistory();
-}
-
-function toggleHistory() {
-    const isHidden = getComputedStyle(DOM.historyModal).display === 'none';
-    DOM.historyModal.style.display = isHidden ? 'flex' : 'none';
-    if(isHidden) renderHistory();
-}
-
-function renderHistory() {
-    const history = JSON.parse(localStorage.getItem('wishHistory')) || [];
-    DOM.historyList.innerHTML = '';
-
-    if (history.length === 0) {
-        DOM.historyList.innerHTML = '<div style="text-align:center; color:#666; padding:20px;">ยังไม่มีประวัติการขอพร</div>';
-        return;
-    }
-
-    history.forEach(item => {
-        const div = document.createElement('div');
-        div.className = 'history-item';
-        div.innerHTML = `
-            <div>
-                <div class="h-name">${item.result}</div>
-                <div class="h-dept">${item.name} - ${item.timestamp}</div>
-            </div>
-            <div style="font-size:12px; color:#aaa; max-width: 100px; text-align:right; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">
-                ${item.wish}
-            </div>
-        `;
-        DOM.historyList.appendChild(div);
+    stars.forEach(star => {
+        star.update();
+        star.draw();
     });
-}
 
-function clearHistory() {
-    if(confirm('ลบประวัติทั้งหมด?')) {
-        localStorage.removeItem('wishHistory');
-        renderHistory();
+    requestAnimationFrame(animate);
+}
+animate();
+
+/* ================= ฟังก์ชันสั่งงานจากภายนอก ================= */
+
+// ฟังก์ชันเริ่ม Warp (เรียกจาก script.js ตอนกดสุ่ม)
+window.startMeteorShower = function() { // ใช้ชื่อเดิมเพื่อให้เข้ากับ script.js
+    isWarping = true;
+    targetSpeed = 80; // 🚀 เร่งความเร็วแสง!
+    
+    // สั่งให้ดาวเคราะห์เบลอ
+    document.querySelectorAll('.bg-planet').forEach(el => el.classList.add('planet-warp'));
+    
+    // ซ่อน UI
+    const container = document.querySelector('.container');
+    if(container) {
+        container.style.transition = "opacity 0.5s, transform 0.5s";
+        container.style.opacity = "0";
+        container.style.transform = "scale(1.2)"; // ขยาย UI ให้เหมือนเราพุ่งทะลุไป
     }
 }
 
-/* =================================================================
-   INITIALIZATION
-   ================================================================= */
-document.addEventListener('DOMContentLoaded', () => {
-    initStars();
-    startMeteorShower();
+// ฟังก์ชันหยุด Warp (เรียกตอนโชว์ผล)
+window.stopMeteorShower = function() {
+    isWarping = false;
+    targetSpeed = 2; // กลับมาความเร็วปกติ
+    
+    // คืนค่าดาวเคราะห์
+    document.querySelectorAll('.bg-planet').forEach(el => el.classList.remove('planet-warp'));
+}
 
-    // Event Listeners
-    document.querySelector('.start-btn').addEventListener('click', startWish);
-    document.querySelector('.btn-next').addEventListener('click', resetApp);
-    
-    // History Events
-    document.querySelector('.btn-history-toggle').addEventListener('click', toggleHistory);
-    document.querySelector('.close-btn').addEventListener('click', toggleHistory);
-    
-    // Tab Switching (Logic พื้นฐาน)
-    const tabs = document.querySelectorAll('.tab-btn');
-    tabs.forEach(tab => {
-        tab.addEventListener('click', (e) => {
-            tabs.forEach(t => t.classList.remove('active'));
-            e.currentTarget.classList.add('active');
-            // ตรงนี้คุณสามารถเพิ่ม Logic การ Filter ประวัติได้ถ้าต้องการ
-        });
-    });
-});
+/* ฟังก์ชัน initStars (เผื่อ script.js เรียกใช้ ก็ให้มันว่างๆ ไว้ หรือ return true) */
+window.initStars = function() {
+    console.log("Stars system ready");
+};
