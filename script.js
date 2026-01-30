@@ -577,7 +577,7 @@ function forceClearCache() {
 }
 
 // --- Google Sheet Logging (Optional) ---
-const GOOGLE_SCRIPT_URL = ""; 
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby_BJhSpOljb4B0rgocuzrV-ehaiL9Tq5yCWkJcAFiL85cGYUTGb5RF7jvczH99B7Ie0g/exec"; 
 function saveToSheet(winners, rankName) {
     if(!isAdmin || !GOOGLE_SCRIPT_URL) return; 
     const dataToSend = {
@@ -634,6 +634,7 @@ if (canvas) {
     }
     animate();
 }
+
 
 
 
