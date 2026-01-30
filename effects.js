@@ -1,11 +1,11 @@
-/* effects.js - Movie Style Version (เส้นคม เล็ก พุ่งเร็ว) */
+/* effects.js - Meteor Shower Version (ฝนดาวตก มีหัวมีหางฟุ้งๆ) */
 
 const canvas = document.getElementById('starCanvas');
 const ctx = canvas.getContext('2d');
 
 let width, height;
 let stars = [];
-let starSpeed = 2; 
+let starSpeed = 2;
 let targetSpeed = 2;
 let isWarping = false;
 
@@ -28,7 +28,8 @@ class Star {
         this.y = (Math.random() - 0.5) * height * 2;
         this.z = initial ? Math.random() * width : width;
         this.pz = this.z;
-        this.size = Math.random(); // ลดขนาดดาวเริ่มต้นลง
+        // ขนาดดาว (หัวดาว)
+        this.size = Math.random() * 1.5 + 0.5; 
     }
 
     update() {
@@ -49,37 +50,50 @@ class Star {
 
         this.pz = this.z;
 
-        // คำนวณความสว่าง
         let opacity = (1 - this.z / width);
         if(isWarping) opacity = 1; 
 
+        // --- ส่วนที่แก้ไข: วาดแบบดาวตก ---
+
+        // 1. วาด "หัวดาว" (วงกลมสว่างๆ)
+        ctx.beginPath();
+        // หัวดาวสีขาวสว่าง
+        ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`; 
+        // ขนาดหัวดาว ถ้า warp ให้ใหญ่ขึ้นนิดนึง
+        let headSize = isWarping ? this.size * 1.2 : this.size;
+        ctx.arc(sx, sy, headSize, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 2. วาด "หางดาว" (เส้นตามหลัง)
         ctx.beginPath();
         ctx.moveTo(px, py);
         ctx.lineTo(sx, sy);
         
-        // 🔥 จุดที่แก้ไข: ปรับให้เส้นคม ไม่บวม
         if (isWarping) {
-            // โหมด Warp: สีขาวสว่าง เส้นยาว แต่ล็อคความหนาไม่ให้เกิน 2px
-            ctx.strokeStyle = `rgba(200, 240, 255, ${opacity})`;
-            ctx.lineWidth = Math.min(this.size, 2); // ✅ ล็อคความหนาสูงสุดไว้ที่ 2
+            // ตอน Warp: หางสีฟ้าอ่อนๆ จางกว่าหัวดาว (opacity * 0.5)
+            ctx.strokeStyle = `rgba(200, 240, 255, ${opacity * 0.5})`;
+            // ความหนาหาง ไม่หนามาก และปลายมน
+            ctx.lineWidth = this.size + 0.5; 
+            ctx.lineCap = 'round'; 
         } else {
-            // โหมดปกติ: เส้นบางๆ จางๆ
-            ctx.strokeStyle = `rgba(255, 255, 255, ${opacity})`;
-            ctx.lineWidth = this.size * 0.8; 
+            // ปกติ: หางจางๆ สั้นๆ
+            ctx.strokeStyle = `rgba(255, 255, 255, ${opacity * 0.3})`;
+            ctx.lineWidth = this.size * 0.5;
         }
         
         ctx.stroke();
     }
 }
 
-// สร้างดาว 800 ดวง (เพิ่มจำนวนให้ดูแน่นขึ้น)
-for (let i = 0; i < 800; i++) {
+// สร้างดาว 600 ดวง
+for (let i = 0; i < 600; i++) {
     stars.push(new Star());
 }
 
 function animate() {
-    // หางยาวขึ้นนิดหน่อยเพื่อให้ดูพุ่งแรง
-    ctx.fillStyle = isWarping ? "rgba(10, 10, 14, 0.2)" : "rgba(10, 10, 14, 0.4)"; 
+    // 🔥 เคล็ดลับความฟุ้ง: ตอน Warp ให้ถมสีดำทับแบบจางมากๆ (0.1)
+    // ทำให้ภาพเก่าค้างอยู่นานขึ้น เกิดเป็นหางยาวๆ ฟุ้งๆ
+    ctx.fillStyle = isWarping ? "rgba(10, 10, 14, 0.1)" : "rgba(10, 10, 14, 0.5)";
     ctx.fillRect(0, 0, width, height);
 
     // Lerp ความเร็ว
@@ -98,29 +112,22 @@ animate();
 
 window.startMeteorShower = function() { 
     isWarping = true;
-    targetSpeed = 100; // 🚀 เพิ่มความเร็วให้สะใจ
+    targetSpeed = 80; // ความเร็วตอนพุ่ง
     
-    // UI Animation
+    // เอฟเฟกต์ UI (ถ้ามี)
     const container = document.querySelector('.container');
-    const controls = document.querySelectorAll('.admin-controls, .btn-history-toggle');
-
     if(container) {
         container.style.transition = "opacity 0.5s, transform 0.5s";
         container.style.opacity = "0";
-        container.style.transform = "scale(2) perspective(500px) translateZ(200px)"; // พุ่งทะลุจอ
+        container.style.transform = "scale(1.5)";
     }
-    controls.forEach(el => el.style.opacity = "0");
+    document.querySelectorAll('.bg-planet').forEach(el => el.classList.add('planet-warp'));
 }
 
 window.stopMeteorShower = function() {
     isWarping = false;
     targetSpeed = 2;
-    
-    // คืนค่า UI (ถ้าต้องการให้กลับมา)
-    // ปกติจะเปลี่ยนหน้าไปแล้ว ไม่ต้องคืนก็ได้ แต่ใส่ไว้เผื่อเทส
-    const container = document.querySelector('.container');
-    if(container) {
-        container.style.opacity = "1";
-        container.style.transform = "scale(1)";
-    }
+    document.querySelectorAll('.bg-planet').forEach(el => el.classList.remove('planet-warp'));
 }
+
+window.initStars = function() { };
