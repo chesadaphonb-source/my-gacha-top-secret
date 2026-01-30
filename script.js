@@ -309,7 +309,6 @@ function updateUIState(isAdmin) {
 function runWarpEffect() {
     isWarping = true;
     const meteor = document.getElementById('meteor');
-    const flash = document.getElementById('flashOverlay');
     const container = document.querySelector('.container');
     
     // ซ่อน UI ระหว่าง Warp
@@ -335,10 +334,9 @@ function runWarpEffect() {
 
 function stopWarpEffect() {
     isWarping = false;
-    const meteor = document.getElementById('meteor');
-    const flash = document.getElementById('flashOverlay');
-    if(meteor) meteor.classList.remove('meteor-falling');
-    if(flash) { flash.style.opacity = 0; }
+    if (window.stopMeteorShower) {
+        window.stopMeteorShower();
+    }
 }
 
 function showResults(winners, tier) {
@@ -626,6 +624,7 @@ if (canvas) {
     }
     animate();
 }
+
 
 
 
