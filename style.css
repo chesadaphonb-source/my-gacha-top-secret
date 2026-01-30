@@ -230,14 +230,14 @@ input[type="text"]:focus {
     display: flex; flex-direction: column; overflow: hidden; animation: fadeIn 0.3s;
 }
 
-.history-header { padding: 15px 20px; background: #25252d; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
+.history-header { padding: 15px 20px; background: #25252d; border-bottom: 1px solid #333; display: flex-shrink: 0; justify-content: space-between; align-items: center; }
 .history-header h2 { margin: 0; color: var(--gold); font-size: 22px; }
 .close-btn { background: none; border: none; color: #888; font-size: 28px; cursor: pointer; }
 .close-btn:hover { color: #fff; }
 
 /* --- TABS SYSTEM (CLEANED) --- */
 .history-tabs {
-    display: flex; gap: 10px; overflow-x: auto; 
+    display: flex-shrink: 0; gap: 10px; overflow-x: auto; 
     padding: 10px 5px; margin-bottom: 20px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
     scrollbar-width: none; /* Firefox */
@@ -279,7 +279,7 @@ input[type="text"]:focus {
 
 /* --- LIST CONTENT --- */
 .history-content-wrapper { 
-    flex-grow: 1; overflow-y: auto; padding-right: 5px; 
+    flex-grow: 1; overflow-y: auto; padding-right: 5px; min-height: 0; 
 }
 .history-content-wrapper::-webkit-scrollbar { width: 6px; }
 .history-content-wrapper::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
@@ -331,6 +331,7 @@ input[type="text"]:focus {
     border-radius: 50%;
     position: absolute;
     z-index: 10;
+    top: 50%; left: 50%;
     box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
     transition: all 0.5s ease;
 }
@@ -456,4 +457,5 @@ input[type="text"]:focus {
 }
 
 .suck-in-animation { animation: suckInSimple 0.8s forwards ease-in; }
+
 
