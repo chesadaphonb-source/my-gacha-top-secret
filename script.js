@@ -300,25 +300,30 @@ function updateUI() {
     poolCount.innerText = `คงเหลือผู้ลุ้นรางวัล: ${participants.length} คน`;
 }
 
-// ✅ ฟังก์ชันจัดการหน้าจอ Admin/Audience (อัปเดตใหม่ให้ตรงกับ HTML)
+// ✅ ฟังก์ชันจัดการหน้าจอ Admin/Audience
 function updateUIState(isAdmin) {
     const startBtnContainer = document.getElementById('startBtnContainer');
     const adminPanel = document.getElementById('adminPanel'); 
     const msgWaiting = document.getElementById('msgWaiting');
     const btnHistory = document.querySelector('.btn-history-toggle'); // ปุ่ม History
 
+    // 1. ตั้งค่าพื้นฐาน: โชว์ปุ่ม History เสมอ (ทั้งแอดมินและคนดู)
+    if (btnHistory) btnHistory.style.display = 'block';
+
     if (isAdmin) {
         // --- ADMIN VIEW ---
+        // แอดมินเห็นปุ่มกดสุ่ม และปุ่มตั้งค่า
         if (startBtnContainer) startBtnContainer.style.display = 'flex';
         if (adminPanel) adminPanel.style.display = 'flex';
         if (msgWaiting) msgWaiting.style.display = 'none';
-        if (btnHistory) btnHistory.style.display = 'block';
     } else {
         // --- AUDIENCE VIEW ---
+        // คนดูไม่เห็นปุ่มสุ่ม แต่เห็นข้อความรอ
         if (startBtnContainer) startBtnContainer.style.display = 'none';
         if (adminPanel) adminPanel.style.display = 'none';
-        if (msgWaiting) msgWaiting.style.display = 'flex';
-        if (btnHistory) btnHistory.style.display = 'none'; // ซ่อนปุ่ม History จากคนดูด้วย (ถ้าต้องการ)
+        // ถ้าอยากให้คนดูเห็นแค่ดาวสวยๆ ไม่มีข้อความ "รอสัญญาณ" รกตา 
+        // ก็ตั้ง msgWaiting เป็น 'none' ได้ครับ แต่ถ้าอยากให้มี text ก็ใส่ 'flex'
+        if (msgWaiting) msgWaiting.style.display = 'flex'; 
     }
 }
 
@@ -640,6 +645,7 @@ if (canvas) {
     }
     animate();
 }
+
 
 
 
