@@ -541,14 +541,6 @@ window.switchTab = function(event, tabId) {
     filterHistory(); // รีเซ็ตรายการที่ซ่อน
 };
 
-window.switchTab = function(event, tabId) {                                           
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    event.currentTarget.classList.add('active');
-    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-    const target = document.getElementById(tabId);
-    if(target) target.classList.add('active');
-};
-
 function copyToClipboard(rankName) {
     const winners = winnersHistory[rankName];
     if (!winners || winners.length === 0) return;
@@ -634,6 +626,7 @@ if (canvas) {
     }
     animate();
 }
+
 
 
 
