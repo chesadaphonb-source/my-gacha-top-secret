@@ -67,42 +67,58 @@ onValue(gameRef, (snapshot) => {
     const state = snapshot.val();
     const setupContainer = document.getElementById('setupContainer');
     const mainScreen = document.getElementById('mainScreen');
-    const audienceStandby = document.getElementById('audienceStandby');
 
     // 2. ถ้า Admin ยัง Setup ไม่เสร็จ
     if (!state || !state.isSetupDone) {
         if (isAdmin) {
+            // แอดมิน: ให้เห็นหน้าตั้งค่า
             if(setupContainer) setupContainer.style.display = 'block';
             if(mainScreen) mainScreen.style.display = 'none';
-            if(audienceStandby) audienceStandby.style.display = 'none';
         } else {
+            // คนดู: ถ้าข้อมูลยังไม่มา ให้รอที่หน้าว่างๆ หรือ Loading ไปก่อน
             if(setupContainer) setupContainer.style.display = 'none';
             if(mainScreen) mainScreen.style.display = 'none';
-            if(audienceStandby) audienceStandby.style.display = 'flex'; // โชว์เรดาร์
+            // ถ้าอยากให้คนดูเห็นข้อความรอเท่ๆ ให้เปิด loader ไว้
+            if(loader) {
+                loader.style.display = 'flex';
+                loader.querySelector('.loading-text').innerText = "WAITING FOR HOST...";
+            }
         }
         return;
     }
 
-   // 3. ถ้า Setup เสร็จแล้ว -> เข้าสู่หน้าเกม
+    // 3. ถ้า Setup เสร็จแล้ว -> ✅ บังคับเข้าหน้าจอหลักทันที (ไม่ต้องสนสถานะ IDLE)
     if(setupContainer) setupContainer.style.display = 'none';
+    if(mainScreen) mainScreen.style.display = 'block'; // โชว์หน้านี้เสมอ!
 
-    // --- แก้ไขใหม่: แยกคนดูกับแอดมิน ---
-    if (isAdmin) {
-        // 👑 แอดมิน: ให้เข้าหน้ากดปุ่มเสมอ
-        if(audienceStandby) audienceStandby.style.display = 'none';
-        if(mainScreen) mainScreen.style.display = 'block';
-    } else {
-        // 🍿 คนดู: เช็คสถานะเกมก่อน
-        // ถ้าสถานะเป็น 'IDLE' (ยังไม่กดเริ่ม) -> ให้ดูเรดาร์รอ
-        if (state.status === 'IDLE') {
-            if(audienceStandby) audienceStandby.style.display = 'flex'; // โชว์เรดาร์
-            if(mainScreen) mainScreen.style.display = 'none';           // ซ่อนหน้าหลัก
-        } else {
-            // ถ้าสถานะเป็น 'WARPING' หรือ 'SHOW_RESULT' -> ให้ดูอนิเมชั่น/ผลรางวัล
-            if(audienceStandby) audienceStandby.style.display = 'none';
-            if(mainScreen) mainScreen.style.display = 'block';
+    // อัปเดตข้อมูล Local
+    participants = state.participants || [];
+    headers = state.headers || [];
+    winnersHistory = state.history || {};
+    currentTier = state.currentTier || 0;
+    
+    // อัปเดต UI และสถานะปุ่ม
+    updateUI();
+    updateUIState(isAdmin); // ฟังก์ชันนี้จะคอยซ่อนปุ่มกดสุ่มให้คนดูเองครับ
+
+    // Logic Animation (ส่วน Warp เหมือนเดิม)
+    if (state.status === 'WARPING') {
+         if (!isWarping) { 
+             starColor = state.activeColor || '#fff';
+             runWarpEffect(); 
+         }
+    } else if (state.status === 'SHOW_RESULT') {
+        stopWarpEffect();
+        if(state.lastRoundWinners) {
+            showResults(state.lastRoundWinners, prizes[currentTier]);
         }
+    } else if (state.status === 'IDLE') {
+         if(document.getElementById('resultScreen').style.display === 'flex') {
+             closeResult();
+         }
+         stopWarpEffect();
     }
+});
 
     // อัปเดตข้อมูล Local
     participants = state.participants || [];
@@ -624,6 +640,7 @@ if (canvas) {
     }
     animate();
 }
+
 
 
 
