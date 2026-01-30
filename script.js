@@ -572,3 +572,41 @@ function saveToSheet(winners, rankName) {
         body: JSON.stringify(dataToSend)
     }).catch(err => console.error("Sheet Error:", err));
 }
+
+/* ==========================================================================
+   ส่วนที่ 6: Drag to Scroll (ระบบลากแท็บ History)
+   ========================================================================== */
+(function setupDragScroll() {
+    const slider = document.getElementById('historyTabs'); // ต้องตรงกับ ID ใน HTML
+    if (!slider) return; // กัน Error ถ้ายังไม่มี element
+
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+
+    slider.addEventListener('mousedown', (e) => {
+        isDown = true;
+        slider.classList.add('active');
+        startX = e.pageX - slider.offsetLeft;
+        scrollLeft = slider.scrollLeft;
+    });
+
+    slider.addEventListener('mouseleave', () => {
+        isDown = false;
+        slider.classList.remove('active');
+    });
+
+    slider.addEventListener('mouseup', () => {
+        isDown = false;
+        slider.classList.remove('active');
+    });
+
+    slider.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - slider.offsetLeft;
+        const walk = (x - startX) * 2; // ปรับความเร็วในการลากที่นี่ (*2 คือเร็ว 2 เท่า)
+        slider.scrollLeft = scrollLeft - walk;
+    });
+})();
+
