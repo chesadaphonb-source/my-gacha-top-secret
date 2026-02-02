@@ -149,3 +149,37 @@ document.addEventListener("DOMContentLoaded", () => {
 
 window.initStars = function() { };
 
+/* =========================================
+   SPACE DEBRIS SPAWNER (ระบบสร้างอุกกาบาต)
+   ========================================= */
+function spawnAsteroid() {
+    const asteroid = document.createElement('div');
+    asteroid.classList.add('asteroid');
+
+    // 1. สุ่มขนาด (เล็ก-ใหญ่)
+    const size = Math.random() * 30 + 10; // ขนาดระหว่าง 10px ถึง 40px
+    asteroid.style.width = `${size}px`;
+    asteroid.style.height = `${size}px`;
+
+    // 2. สุ่มตำแหน่งเริ่มต้นแนวตั้ง (Y)
+    asteroid.style.top = `${Math.random() * 100}vh`;
+    asteroid.style.left = '-50px'; // เริ่มต้นนอกจอทางซ้าย
+
+    // 3. สุ่มความเร็วในการลอย (ยิ่งเลขเยอะยิ่งช้า)
+    const duration = Math.random() * 20 + 15; // ระหว่าง 15 ถึง 35 วินาที
+    asteroid.style.animation = `driftAcross ${duration}s linear forwards`;
+    
+    // สุ่มสีหินนิดหน่อย (เทาเข้ม/เทาอ่อน)
+    const grayScale = Math.floor(Math.random() * 50 + 80);
+    asteroid.style.backgroundColor = `rgb(${grayScale},${grayScale},${grayScale})`;
+
+    document.body.appendChild(asteroid);
+
+    // 4. ลบทิ้งเมื่อลอยพ้นจอ (สำคัญมาก! ไม่งั้นเครื่องค้าง)
+    setTimeout(() => {
+        asteroid.remove();
+    }, duration * 1000);
+}
+
+// เริ่มสร้างอุกกาบาตทุกๆ 2 วินาที (ปรับเลขให้น้อยลงถ้าอยากให้มีเยอะๆ)
+setInterval(spawnAsteroid, 2000);
