@@ -193,24 +193,6 @@ function updateUI(showCount = false) {
     }
     starColor = tier.color;
 }
-
-    // ถ้ายังไม่จบ แสดงผลปกติ
-    const tier = prizes[currentTier];
-    document.getElementById('bannerDisplay').innerHTML = `
-        <h1 style="color:${tier.color}; font-size: clamp(30px, 6vw, 60px); margin:0; text-shadow: 0 0 20px currentColor;">${tier.name}</h1>
-        <p style="font-size: 20px; color:#ddd;">จำนวนรางวัล: ${tier.count}</p>
-    `;
-    
-    // โชว์ปุ่ม Start Wish ตามปกติ
-    if (isAdmin) {
-        document.getElementById('adminControls').style.display = 'block';
-    }
-
-    if(showCount) {
-        document.getElementById('poolCount').innerText = `คงเหลือผู้ลุ้นรางวัล: ${participants.length} คน`;
-    }
-    starColor = tier.color;
-
 // Admin กดปุ่ม Start
 function triggerWish() {
     if(!isAdmin) return;
