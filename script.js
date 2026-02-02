@@ -80,25 +80,59 @@ window.onload = function() {
 
 // ฟังก์ชันรับค่าจาก Firebase แล้วแสดงผล (Audience)
 function handleSync(data) {
-    if (isAdmin) return; // Admin ไม่ต้องฟังตัวเอง (ทำงาน Local แล้วส่งค่าไป)
+    if (isAdmin) return; // Admin ไม่ต้องฟังตัวเอง
+
+    // --- เพิ่มส่วนนี้: เช็คสถานะ SETUP (ช่วง Admin กรอก CSV) ---
+    if (data.status === 'SETUP') {
+        // ซ่อนหน้าจอ Setup (ช่องกรอก) และซ่อนหน้าจอผลรางวัล
+        document.getElementById('setupContainer').style.display = 'none';
+        document.getElementById('resultScreen').style.display = 'none';
+        
+        // บังคับโชว์หน้าจอหลัก แต่เปลี่ยนข้อความ
+        document.getElementById('mainScreen').style.display = 'block';
+        
+        document.getElementById('bannerDisplay').innerHTML = `
+            <div style="
+                margin-top: 20vh;
+                padding: 40px;
+                background: rgba(255, 255, 255, 0.05);
+                backdrop-filter: blur(10px);
+                border-radius: 20px;
+                border: 1px solid rgba(255,255,255,0.1);
+                display: inline-block;
+                animation: pulse 2s infinite;
+            ">
+                <h1 style="font-size: 3em; color: #ddd; margin: 0 0 20px 0;">⏳</h1>
+                <h2 style="color: #fff; margin: 0;">รอดำเนินการ...</h2>
+                <p style="color: #888; margin-top: 10px;">กรุณารอเจ้าหน้าที่ตั้งค่าระบบสักครู่</p>
+            </div>
+        `;
+        document.getElementById('poolCount').style.display = 'none'; // ซ่อนจำนวนคน
+        return; 
+    }
+    // --- จบส่วนเพิ่ม ---
+
+    // คืนค่าการแสดงผลปกติ (ถ้าไม่ใช่สถานะ SETUP)
+    document.getElementById('poolCount').style.display = 'block';
 
     // อัปเดต Tier หน้าจอ
     if (data.tierIndex !== undefined) {
         currentTier = data.tierIndex;
-        updateUI(false); // false = ไม่ต้องแก้ยอดคงเหลือ (เพราะ Audience ไม่มี CSV)
+        // เรียก updateUI เพื่อวาดหน้าจอเกมปกติกลับมา
+        updateUI(false); 
     }
 
     // สั่งงาน Animation ตาม State
     if (data.status === 'WARPING') {
-        playWarpAnimation(data.winners); // ส่งข้อมูลผู้ชนะไปรอไว้
+        playWarpAnimation(data.winners);
     } else if (data.status === 'REVEAL') {
-        // แสดงผลทันที (กรณีเข้ามาทีหลัง)
         if(document.getElementById('resultScreen').style.display === 'none'){
             showResults(data.winners || [], prizes[currentTier]);
         }
     } else if (data.status === 'IDLE') {
         closeResult();
     } else if (data.status === 'RESET') {
+        // กรณี Reset แบบ Reload พร้อมกัน (เผื่อไว้)
         location.reload();
     }
 }
@@ -575,22 +609,22 @@ function animate() {
 animate();
 
 // ฟังก์ชันเริ่มเกมใหม่ (ล้างค่าทั้งหมด)
+// ฟังก์ชัน Re-system (Admin กด)
 function resetGame() {
-    if(!confirm("⚠️ ต้องการล้างข้อมูลทั้งหมดและเริ่มเกมใหม่ใช่ไหม?")) return;
+    if(!confirm("⚠️ WARNING: ต้องการล้างระบบทั้งหมด?\n(ประวัติจะหายไป และกลับสู่หน้าใส่ CSV)")) return;
 
-    // 1. สั่งลบประวัติใน Firebase
+    // 1. ล้าง History ใน Firebase
     db.ref('history').remove();
 
-    // 2. ส่งสัญญาณ RESET ไปให้ฝั่งคนดู (ให้หน้าจอคนดูรีโหลดอัตโนมัติ)
+    // 2. ส่งสัญญาณ SETUP ไปบอกคนดู (เพื่อให้คนดูขึ้นหน้ารอ)
     db.ref('gameState').set({
-        status: 'RESET',
+        status: 'SETUP',
         timestamp: Date.now()
     });
 
-    // 3. รีโหลดหน้า Admin กลับไปหน้าแรก
-    setTimeout(() => {
-        window.location.reload();
-    }, 500);
+    // 3. Admin รีโหลดหน้าจอตัวเอง (ล้าง Cache/ตัวแปร กลับไปหน้าใส่ CSV)
+    // การ reload จะทำให้ js เริ่มทำงานใหม่ตั้งแต่บรรทัดแรก
+    window.location.reload();
 }
 
 
