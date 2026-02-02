@@ -1,26 +1,10 @@
-/* =================================================================
-   1. CORE VARIABLES & BASE STYLES
-   ================================================================= */
+/* --- ตั้งค่าธีม Space --- */
 :root {
     --bg-dark: #0c0c10;
     --card-bg: #2a2a35;
     --gold: #e4d6a7;
     --gold-dark: #d4c188;
-    --neon-blue: #4a90e2;
-    --neon-red: #ff4d4d;
-    --glass-bg: rgba(255, 255, 255, 0.03);
-    --glass-border: rgba(255, 255, 255, 0.1);
-    
-    /* Z-Index Hierarchy */
-    --z-bg: -1;
-    --z-content: 10;
-    --z-meteor: 50;
-    --z-result: 100;
-    --z-controls: 200;
-    --z-flash: 900;
-    --z-history-btn: 1000;
-    --z-history-modal: 2000;
-    --z-loader: 9999;
+    --control-bar-height: 80px;
 }
 
 body {
@@ -28,53 +12,53 @@ body {
     font-family: 'Kanit', sans-serif;
     background-color: var(--bg-dark);
     color: #fff;
-    overflow: hidden; 
+    overflow: hidden;
     height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-/* Scrollbar สวยๆ */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #1e1e24; }
-::-webkit-scrollbar-thumb { background: #555; border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: #777; }
-
-/* =================================================================
-   2. BACKGROUND & ANIMATIONS
-   ================================================================= */
+/* --- Background Stars (Canvas) --- */
 #starCanvas {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    z-index: var(--z-bg);
+    z-index: -1;
     background: radial-gradient(circle at center, #1b2735 0%, #090a0f 100%);
 }
 
+/* --- Meteor Animation (ลูกไฟพุ่งชน) --- */
 #meteor {
     position: fixed; top: 50%; left: 50%;
     transform: translate(-50%, -50%) scale(0);
     width: 20px; height: 20px;
     background: #fff;
     border-radius: 50%;
-    z-index: var(--z-meteor);
-    opacity: 0; pointer-events: none;
+    z-index: 500;
+    opacity: 0;
+    pointer-events: none;
     box-shadow: 0 0 30px 10px currentColor, 0 0 60px 30px white; 
 }
-.meteor-falling { animation: meteorFall 1.5s ease-in forwards; }
 
-#flashOverlay { 
-    position: fixed; top:0; left:0; width:100%; height:100%; 
-    background: white; z-index: var(--z-flash); pointer-events: none; 
-    opacity: 0; transition: opacity 0.5s; 
+.meteor-falling {
+    animation: meteorFall 1.5s ease-in forwards;
 }
 
-/* =================================================================
-   3. LAYOUT CONTAINERS
-   ================================================================= */
+@keyframes meteorFall {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 0; color: #fff; }
+    20% { opacity: 1; }
+    70% { transform: translate(-50%, -50%) scale(2); color: currentColor; }
+    100% { transform: translate(-50%, -50%) scale(50); opacity: 0; color: currentColor; }
+}
+
+/* --- Flash Overlay --- */
+#flashOverlay { 
+    position: fixed; top:0; left:0; width:100%; height:100%; 
+    background: white; z-index: 999; pointer-events: none; opacity: 0; transition: opacity 0.5s; 
+}
+
+/* --- UI Containers --- */
 .container {
-    z-index: var(--z-content); 
-    text-align: center; 
-    width: 90%; max-width: 800px;
+    z-index: 10; text-align: center; width: 90%; max-width: 800px;
     transition: opacity 0.5s;
 }
 
@@ -84,91 +68,31 @@ body {
     backdrop-filter: blur(10px);
 }
 
-.glass-panel {
-    background: var(--glass-bg);
-    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-    border: 1px solid var(--glass-border);
-    border-radius: 24px;
-    padding: 40px 20px;
-    margin-bottom: 30px;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-    display: flex; flex-direction: column; align-items: center; gap: 20px;
-}
-
-/* =================================================================
-   4. UI ELEMENTS
-   ================================================================= */
 .gold-text { color: var(--gold); margin-bottom: 5px; }
 .sub-text { color: #aaa; font-size: 14px; margin-bottom: 20px; }
 
 input[type="text"] {
     width: 80%; padding: 15px; border-radius: 10px; border: 1px solid #555;
     background: rgba(0,0,0,0.5); color: white; text-align: center; font-size: 16px;
-    margin-bottom: 20px; outline: none; transition: 0.3s;
-}
-input[type="text"]:focus {
-    border-color: var(--gold); background: rgba(0,0,0,0.8);
+    margin-bottom: 20px;
 }
 
-/* BUTTONS */
 .btn-wish {
     background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%);
-    color: #3b4255; padding: 12px 30px; font-size: 18px; font-weight: 800;
+    color: #3b4255;
+    padding: 12px 30px; font-size: 18px; font-weight: 800;
     border-radius: 50px; border: 3px solid #f0e6c6;
     cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     white-space: nowrap; transition: transform 0.1s;
 }
 .btn-wish:active { transform: scale(0.95); }
-.start-btn { font-size: 24px; padding: 20px 60px; }
 
-.btn-secondary {
-    background: transparent; border: 1px solid #777; color: #ddd; 
-    font-size: 16px; padding: 10px 25px; border-radius: 50px; cursor: pointer;
-    transition: 0.3s;
-}
-.btn-secondary:hover { border-color: #fff; color: #fff; background: rgba(255,255,255,0.1); }
+.start-btn { font-size: 24px; padding: 20px 60px; margin-top: 20px; }
 
-.btn-next {
-    background: linear-gradient(90deg, #1e3c72 0%, #2a5298 100%);
-    border: 1px solid var(--neon-blue); color: #fff;
-    padding: 10px 30px; border-radius: 50px;
-    font-size: 16px; font-weight: bold; cursor: pointer;
-    box-shadow: 0 0 15px rgba(74, 144, 226, 0.4);
-    margin-left: 15px; transition: 0.3s;
-}
-.btn-next:hover { transform: scale(1.05); box-shadow: 0 0 25px rgba(74, 144, 226, 0.8); }
-
-.admin-controls {
-    display: flex; justify-content: center; align-items: center; gap: 15px;
-    opacity: 0.6; transition: opacity 0.3s ease;
-}
-.admin-controls:hover { opacity: 1; }
-
-.btn-admin {
-    background: transparent; border: 1px solid rgba(255, 255, 255, 0.3);
-    color: #aaa; font-size: 12px; padding: 8px 16px;
-    border-radius: 50px; cursor: pointer; transition: all 0.2s;
-    text-transform: uppercase; letter-spacing: 1px;
-}
-.btn-admin:hover {
-    background: rgba(255, 255, 255, 0.1); color: #fff; border-color: #fff; transform: translateY(-2px);
-}
-.btn-admin.btn-danger:hover {
-    border-color: var(--neon-red); color: var(--neon-red);
-    background: rgba(255, 77, 77, 0.1); box-shadow: 0 0 15px rgba(255, 77, 77, 0.2);
-}
-.btn-resync {
-    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-    border: 1px solid var(--neon-blue); color: white;
-    box-shadow: 0 0 15px rgba(30, 60, 114, 0.5);
-}
-
-/* =================================================================
-   5. RESULT SCREEN
-   ================================================================= */
+/* --- Result Screen --- */
 #resultScreen {
     display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(12, 12, 16, 0.95); z-index: var(--z-result);
+    background: rgba(12, 12, 16, 0.95); z-index: 100;
     flex-direction: column;
 }
 
@@ -179,341 +103,127 @@ input[type="text"]:focus {
 .result-header h1 { margin: 0; font-size: clamp(24px, 5vw, 40px); text-shadow: 0 0 15px currentColor; }
 
 .result-content {
-    flex: 1 1 auto; overflow-y: auto; padding: 10px 20px 100px 20px;
+    flex: 1 1 auto; overflow-y: auto;
+    padding: 10px 20px 100px 20px;
     -webkit-overflow-scrolling: touch;
 }
 
 .result-grid {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); 
-    gap: 15px; max-width: 1200px; margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); 
+    gap: 15px;
+    max-width: 1200px; margin: 0 auto;
 }
 
+/* --- Card Styles --- */
 .card {
     background: linear-gradient(135deg, #2a2a35 0%, #1c1c22 100%);
-    border-radius: 10px; overflow: hidden; border: 2px solid #444;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3); display: flex; flex-direction: column;
-    min-height: 200px; animation: popIn 0.4s ease-out backwards;
+    border-radius: 10px; overflow: hidden;
+    border: 2px solid #444;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    display: flex; flex-direction: column;
+    min-height: 250px; 
+    animation: popIn 0.4s ease-out backwards;
 }
-.card-header { background: #444; padding: 8px; font-weight: 800; text-align: center; color: #000; }
-.card-body { padding: 15px 10px; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; text-align: center; gap: 5px; }
-.info-main { font-size: clamp(14px, 3.5vw, 18px); font-weight: bold; color: #fff; margin-bottom: 5px; }
-.info-sub { font-size: 12px; color: #bbb; word-wrap: break-word; }
+
+.card-header {
+    background: #444; padding: 8px;
+    font-size: clamp(16px, 4vw, 20px); font-weight: 800; text-align: center; color: #000;
+}
+
+.card-body {
+    padding: 15px 10px;
+    flex-grow: 1; display: flex; flex-direction: column; 
+    justify-content: center; text-align: center; gap: 5px;
+}
+
+.info-main { font-size: clamp(14px, 3.5vw, 18px); font-weight: bold; color: #fff; margin-bottom: 5px; line-height: 1.3; }
+.info-sub { font-size: 12px; color: #bbb; white-space: normal; word-wrap: break-word; line-height: 1.4; }
 
 .control-bar {
-    position: fixed; bottom: 0; left: 0; width: 100%; height: 80px;
+    position: fixed; bottom: 0; left: 0; width: 100%; height: var(--control-bar-height);
     background: rgba(20, 20, 30, 0.95); border-top: 1px solid #444;
     display: flex; justify-content: center; align-items: center; gap: 20px;
-    backdrop-filter: blur(5px); z-index: var(--z-controls);
+    backdrop-filter: blur(5px); z-index: 200;
 }
 
-/* =================================================================
-   6. HISTORY MODAL (FIXED VERSION)
-   ================================================================= */
+.btn-secondary {
+    background: transparent; border: 1px solid #777; color: #ddd; 
+    font-size: 16px; padding: 10px 25px; border-radius: 50px; cursor: pointer;
+}
+.btn-secondary:hover { border-color: #fff; color: #fff; background: rgba(255,255,255,0.1); }
+
+@keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+/* --- History Button & Modal --- */
 .btn-history-toggle {
-    position: fixed; top: 20px; right: 20px; 
-    background: rgba(255, 255, 255, 0.1); color: #ffd700; border: 2px solid #ffd700;
-    padding: 12px 25px; border-radius: 50px; cursor: pointer; 
-    z-index: var(--z-history-btn); font-weight: bold; 
+    position: fixed; top: 20px; right: 20px;
+    background: rgba(255, 255, 255, 0.1); color: #ffd700; 
+    border: 2px solid #ffd700; padding: 12px 25px; border-radius: 50px;
+    cursor: pointer; z-index: 9999; font-weight: bold;
     backdrop-filter: blur(5px); box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
-    transition: all 0.3s;
 }
 .btn-history-toggle:hover { background: #ffd700; color: #000; transform: scale(1.05); }
 
 .history-modal {
     display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.85); z-index: var(--z-history-modal);
+    background: rgba(0, 0, 0, 0.85); z-index: 2000;
     justify-content: center; align-items: center; backdrop-filter: blur(10px);
 }
+
 .history-content {
-    background: #1e1e24; width: 95%; max-width: 1000px; max-height: 85vh;
-    border-radius: 15px; border: 1px solid #444; box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+    background: #1e1e24; width: 95%; max-width: 700px; max-height: 85vh;
+    border-radius: 15px; border: 1px solid #444;
     display: flex; flex-direction: column; overflow: hidden; animation: fadeIn 0.3s;
 }
 
-.history-header { padding: 15px 20px; background: #25252d; border-bottom: 1px solid #333; display: flex-shrink: 0; justify-content: space-between; align-items: center; }
-.history-header h2 { margin: 0; color: var(--gold); font-size: 22px; }
-.close-btn { background: none; border: none; color: #888; font-size: 28px; cursor: pointer; }
+@keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+.history-header {
+    padding: 15px 20px; background: #25252d; border-bottom: 1px solid #333;
+    display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
+}
+.history-header h2 { margin: 0; color: #e4d6a7; font-size: 22px; }
+
+.close-btn { background: none; border: none; color: #888; font-size: 28px; cursor: pointer; padding: 0; }
 .close-btn:hover { color: #fff; }
 
-/* --- TABS SYSTEM (CLEANED) --- */
-.history-tabs {
-    /* 🔴 จุดที่ต้องแก้สำคัญที่สุด */
-    display: flex;            /* สั่งให้ลูกๆ เรียงแนวนอน */
-    flex-wrap: nowrap;        /* ห้ามขึ้นบรรทัดใหม่เด็ดขาด! */
-    overflow-x: auto;         /* ถ้าเกินขอบ ให้มี Scrollbar เลื่อนซ้ายขวา */
-    
-    /* จัดระยะห่าง */
-    gap: 10px;
-    padding: 15px 10px;       /* พื้นที่หายใจ กันปุ่มโดนตัด */
-    width: 100%;              /* กว้างเต็มจอ */
-    box-sizing: border-box;
-    
-    /* ตั้งค่าอื่นๆ */
-    flex-shrink: 0;           /* ตัวกล่องแท็บห้ามหด */
-    align-items: center;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    
-    /* ปิด Scrollbar (แต่ยังเลื่อนได้) */
-    scrollbar-width: none; 
-    -ms-overflow-style: none;
-   
-    cursor: grab; /* เมาส์เป็นรูปมือแบ */
-    user-select: none; /* ห้ามคลุมดำตัวหนังสือเวลาลาก */
+.history-body {
+    display: flex; flex-direction: column; flex: 1; min-height: 0; background: #1e1e24; overflow: hidden;
 }
-.history-tabs::-webkit-scrollbar { display: none; } /* Chrome */
 
-.history-tabs.active {
-    cursor: grabbing; /* เมาส์เป็นรูปมือกำ */
-    cursor: -webkit-grabbing;
+.history-tabs {
+    display: flex; gap: 8px; padding: 0 15px; background: #1e1e24; border-bottom: 2px solid #2a2a35;
+    overflow-x: auto; white-space: nowrap; flex-shrink: 0;
+    -ms-overflow-style: none; scrollbar-width: none; cursor: grab; user-select: none;
 }
+.history-tabs::-webkit-scrollbar { display: none; }
+.history-tabs.dragging { cursor: grabbing; }
 
 .tab-btn {
-    /* 1. จัดกึ่งกลางเป๊ะๆ */
-    display: inline-flex; align-items: center; justify-content: center;
-    
-    /* 2. ขนาดและรูปร่าง */
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.3); 
-    color: #ccc;
-    height: 42px; padding: 0 20px; /* สูงเท่ากันหมด */
-    border-radius: 50px;
-    
-    /* 3. ฟอนต์ */
-    font-family: 'Kanit', sans-serif; font-size: 15px; 
-    white-space: nowrap; cursor: pointer; transition: all 0.2s; flex-shrink: 0;
-    gap: 8px; /* ระยะห่างตัวหนังสือกับเลข */
+    background: transparent; border: none; color: #777; padding: 15px 10px;
+    font-family: 'Kanit', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; position: relative;
+}
+.tab-btn:hover { color: #fff; }
+.tab-btn.active { color: #e4d6a7; opacity: 1; }
+.tab-btn.active::after {
+    content: ''; position: absolute; bottom: -2px; left: 0; width: 100%; height: 3px; background: #e4d6a7;
 }
 
-.tab-btn:hover {
-    background: rgba(255, 255, 255, 0.15); transform: translateY(-2px);
-}
-.tab-btn.active {
-    color: #000 !important; font-weight: 700;
-    border-color: transparent; box-shadow: 0 0 15px currentColor;
-    transform: scale(1.05);
-}
-
-.tab-btn .badge {
-    background: rgba(0,0,0,0.4); color: inherit;
-    padding: 3px 8px; border-radius: 12px; font-size: 0.8em; font-weight: 600;
-    line-height: 1;
-}
-
-/* --- LIST CONTENT --- */
-.history-content-wrapper { 
-    flex-grow: 1; overflow-y: auto; padding-right: 5px; min-height: 0; 
+.history-content-wrapper {
+    flex-grow: 1; overflow-y: auto; padding: 10px 0;
+    scrollbar-width: thin; scrollbar-color: #444 #1e1e24;
 }
 .history-content-wrapper::-webkit-scrollbar { width: 6px; }
-.history-content-wrapper::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+.history-content-wrapper::-webkit-scrollbar-track { background: #1e1e24; }
+.history-content-wrapper::-webkit-scrollbar-thumb { background: #555; border-radius: 4px; }
 
-.tab-content { display: none; animation: fadeIn 0.3s; }
+.tab-content { display: none; }
 .tab-content.active { display: block; }
 
 .history-item {
-    display: flex; justify-content: space-between; align-items: center;
-    background: rgba(255, 255, 255, 0.03); padding: 12px 15px; 
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    margin-bottom: 5px; border-radius: 6px;
+    padding: 12px 20px; border-bottom: 1px solid #2f2f38;
+    display: flex; justify-content: space-between; align-items: flex-start; font-size: 15px;
 }
-.history-item .h-name { color: #fff; font-weight: 500; font-size: 1rem; }
-.history-item .h-dept { color: #888; font-size: 0.85rem; }
-
-/* Search & Copy */
-.search-container input {
-    width: 95%; padding: 12px; margin: 0 auto 15px auto; display: block;
-    background: #222; border: 1px solid #444; color: white; border-radius: 8px;
-}
-.btn-copy {
-    background: #444; color: #fff; border: none; padding: 5px 10px;
-    border-radius: 4px; cursor: pointer; font-size: 0.8rem;
-}
-.btn-copy:hover { background: #666; }
-
-/* =================================================================
-   7. LOADING & STANDBY
-   ================================================================= */
-.loading-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: #050508; z-index: var(--z-loader);
-    display: flex; flex-direction: column; /* จัดแนวตั้ง */
-    justify-content: center; align-items: center;
-    transition: opacity 0.5s ease;
-}
-
-.planet-spinner { 
-    position: relative; 
-    width: 100px; height: 100px; /* ขยายพื้นที่ให้ดาว */
-    margin-bottom: 20px; 
-    display: flex; justify-content: center; align-items: center;
-}
-
-/* --- Base Planet Style (ค่าพื้นฐาน) --- */
-.planet {
-    width: 60px; height: 60px;
-    border-radius: 50%;
-    position: absolute;
-    z-index: 10;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
-    transition: all 0.5s ease;
-}
-
-/* 🪐 แบบที่ 1: Saturn (ดาวเสาร์) */
-.planet-saturn {
-    background: linear-gradient(135deg, #f39c12, #d35400);
-    box-shadow: 0 0 20px rgba(243, 156, 18, 0.4);
-}
-.planet-saturn::before {
-    content: ''; position: absolute;
-    top: 50%; left: 50%;
-    width: 90px; height: 12px;
-    border-radius: 50%;
-    border: 3px solid rgba(255, 255, 255, 0.3);
-    border-top: 3px solid rgba(255, 255, 255, 0.9);
-    border-bottom: 3px solid rgba(255, 255, 255, 0.1);
-    transform: translate(-50%, -50%) rotate(-25deg);
-}
-
-/* ❄️ แบบที่ 2: Ice World (ดาวน้ำแข็ง) */
-.planet-ice {
-    background: radial-gradient(circle at 30% 30%, #a1c4fd, #192f6a);
-    box-shadow: 0 0 25px rgba(161, 196, 253, 0.6), inset -5px -5px 10px rgba(0,0,0,0.5);
-    animation: floatIce 3s infinite ease-in-out;
-}
-
-/* 🔥 แบบที่ 3: Magma (ดาวลาวา) */
-.planet-magma {
-    background: radial-gradient(circle at 30% 30%, #ff9a9e, #ff0000);
-    box-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
-    animation: pulseMagma 2s infinite;
-}
-
-/* 🌍 แบบที่ 4: Cyber Earth (โลกอนาคต) */
-.planet-cyber {
-    background: linear-gradient(45deg, #00b894, #0984e3);
-    box-shadow: 0 0 20px rgba(0, 184, 148, 0.5);
-    overflow: hidden;
-}
-.planet-cyber::after {
-    content: ''; position: absolute;
-    width: 100%; height: 100%;
-    background: radial-gradient(circle, rgba(255,255,255,0.2) 10%, transparent 10.5%);
-    background-size: 20px 20px;
-    animation: spinCyber 10s linear infinite;
-}
-
-.loading-text {
-    font-family: 'Courier New', monospace; letter-spacing: 3px; font-size: 14px;
-    animation: pulse 1s infinite alternate; color: var(--neon-blue);
-    margin-top: 10px;
-}
-
-.standby-screen {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.8); z-index: 50;
-    display: flex; flex-direction: column; justify-content: center; align-items: center;
-}
-.radar-container {
-    width: 120px; height: 120px; border: 2px solid #333; border-radius: 50%;
-    position: relative; margin-bottom: 20px; background: rgba(0, 255, 0, 0.05);
-    box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
-}
-.radar-sweep {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    border-radius: 50%; background: conic-gradient(from 0deg, transparent 270deg, rgba(0, 255, 0, 0.4) 360deg);
-    animation: spin 2s linear infinite;
-}
-.standby-screen h2 { color: var(--neon-blue); font-size: 24px; text-shadow: 0 0 10px var(--neon-blue); }
-
-/* Message Waiting */
-#msgWaiting {
-    display: none; justify-content: center; align-items: center; gap: 15px;
-    padding: 15px 30px; margin-top: 20px;
-    font-family: 'Courier New', monospace; color: #00f2ff;
-    font-size: 1.1rem; font-weight: bold; letter-spacing: 2px;
-    background: rgba(0, 20, 40, 0.6); border: 1px solid #00f2ff;
-    border-radius: 4px; box-shadow: 0 0 15px rgba(0, 242, 255, 0.1);
-}
-.mini-loader {
-    width: 18px; height: 18px; border: 2px solid rgba(0, 242, 255, 0.3);
-    border-top: 2px solid #00f2ff; border-radius: 50%;
-    animation: miniSpin 1s linear infinite;
-}
-.blink-text-soft { animation: textPulse 1.5s infinite alternate; }
-
-/* =================================================================
-   8. KEYFRAMES
-   ================================================================= */
-@keyframes meteorFall {
-    0% { transform: translate(-50%, -50%) scale(0); opacity: 0; color: #fff; }
-    20% { opacity: 1; }
-    70% { transform: translate(-50%, -50%) scale(2); color: currentColor; }
-    100% { transform: translate(-50%, -50%) scale(50); opacity: 0; color: currentColor; }
-}
-@keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-@keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-@keyframes miniSpin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-@keyframes pulse { from { opacity: 0.5; } to { opacity: 1; } }
-@keyframes textPulse { from { opacity: 0.6; } to { opacity: 1; } }
-@keyframes suckInSimple {
-    0% { transform: scale(1); opacity: 1; filter: blur(0px); }
-    100% { transform: scale(0); opacity: 0; filter: blur(10px); }
-}
-
-/* --- Planet Animations (ที่เพิ่มมาใหม่) --- */
-@keyframes floatIce {
-    0%, 100% { box-shadow: 0 0 25px rgba(161, 196, 253, 0.6); transform: translate(-50%, -50%) translateY(0); }
-    50% { box-shadow: 0 0 40px rgba(161, 196, 253, 0.9); transform: translate(-50%, -50%) translateY(-5px); }
-}
-
-@keyframes pulseMagma {
-    0% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 30px rgba(255, 0, 0, 0.5); }
-    50% { transform: translate(-50%, -50%) scale(1.05); box-shadow: 0 0 50px rgba(255, 60, 0, 0.8); }
-    100% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 30px rgba(255, 0, 0, 0.5); }
-}
-
-@keyframes spinCyber { 
-    from { transform: rotate(0deg); } 
-    to { transform: rotate(360deg); } 
-}
-
-.suck-in-animation { animation: suckInSimple 0.8s forwards ease-in; }
-
-/* =========================================
-   BACKGROUND PLANETS (ดาวลอยหลังฉาก)
-   ========================================= */
-.bg-planet {
-    position: fixed;
-    border-radius: 50%;
-    z-index: -5; /* อยู่หลังสุด */
-    opacity: 0.6;
-}
-
-/* ดาวดวงที่ 1 (ซ้ายบน - เป็นดาวเสาร์) */
-.planet-1 {
-    width: 120px; height: 120px;
-    top: 10%; left: 5%;
-    background: linear-gradient(135deg, #f39c12, #d35400);
-    box-shadow: 0 0 30px rgba(243, 156, 18, 0.3);
-    animation: floatIce 8s infinite ease-in-out;
-}
-/* วงแหวนดาวเสาร์ */
-.planet-1::after {
-    content: ''; position: absolute;
-    top: 50%; left: 50%;
-    width: 160px; height: 20px;
-    border-radius: 50%;
-    border: 4px solid rgba(255,255,255,0.3);
-    transform: translate(-50%, -50%) rotate(-20deg);
-}
-
-/* ดาวดวงที่ 2 (ขวาล่าง - เป็นดาวน้ำแข็ง) */
-.planet-2 {
-    width: 80px; height: 80px;
-    bottom: 15%; right: 10%;
-    background: radial-gradient(circle at 30% 30%, #a1c4fd, #192f6a);
-    box-shadow: 0 0 20px rgba(161, 196, 253, 0.5);
-    animation: floatIce 6s infinite ease-in-out reverse;
-}
+.history-item:hover { background: rgba(255,255,255,0.02); }
+.history-item span { text-align: right; color: #999; font-size: 14px; padding-left: 15px; white-space: normal; max-width: 50%; word-break: break-word; }

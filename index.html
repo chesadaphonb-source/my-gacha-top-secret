@@ -5,30 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Cosmic Wish System</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;600;800&family=Courier+New:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body> 
-    <div id="globalLoader" class="loading-overlay">
-        <div class="loader-content">
-            <div class="planet-spinner">
-                <div class="planet"></div>
-            </div>
-            <div class="loading-text">ESTABLISHING LINK...</div>
-        </div>
-    </div>
-  
     <canvas id="starCanvas"></canvas>
-    <div class="bg-planet planet-1"></div>
-    <div class="bg-planet planet-2"></div>
-    
+
     <div id="flashOverlay"></div>
     <div id="meteor"></div>
 
     <div class="container" id="setupContainer">
         <div class="setup-box">
-            <h1 class="gold-text">💫 Wish System</h1>
+            <h1 class="gold-text">💫 Cosmic Wish System</h1>
             <p class="sub-text">Connecting to Galactic Database...</p>
         
             <input type="text" id="sheetUrl" 
@@ -40,32 +29,12 @@
     </div>
 
     <div class="container" id="mainScreen" style="display:none;">
-    
-        <div class="glass-panel">
-            <div id="bannerDisplay" class="banner-display"></div>
-            <div class="pool-count" id="poolCount">System Initializing...</div>
-            
-            <div class="action-area" id="startBtnContainer">
-                <button id="btnStart" class="btn-wish start-btn" onclick="startWish()">
-                    ✦ START WISH ✦
-                </button>
-            </div>
-        </div>
-
-        <div class="admin-controls" id="adminPanel">
-             <button id="btnGoToCurrent" class="btn-admin btn-resync" onclick="goToLatestSession()" style="display:none;">
-                ⌖ Re-Sync Rank
-            </button>
-
-            <button id="btnResetSystem" class="btn-admin btn-danger" onclick="resetGame()">
-                ⚠️ Reset System
-            </button>
-        </div>
+        <div id="bannerDisplay" class="banner-display"></div>
+        <div class="pool-count" id="poolCount">System Initializing...</div>
         
-        <div id="msgWaiting">
-            <div class="mini-loader"></div>
-            <span class="blink-text-soft">SYSTEM STANDBY : WAITING FOR COMMAND...</span>
-        </div>
+        <button class="btn-wish start-btn" onclick="startWish()">
+            ✦ START WISH ✦
+        </button>
     </div>
 
     <div id="resultScreen">
@@ -81,7 +50,7 @@
             <button class="btn-secondary" onclick="closeResult()">
                 ❮ ย้อนกลับ
             </button>
-            <button id="btnNextPrize" class="btn-next" onclick="nextRound()">
+            <button class="btn-wish" onclick="nextRound()">
                 รางวัลถัดไป ❯
             </button>
         </div> 
@@ -97,24 +66,12 @@
                 <h2>✨ Hall of Fame ✨</h2>
                 <button class="close-btn" onclick="toggleHistory()">×</button>
             </div>
-
-            <div class="history-tabs" id="historyTabs">
-                </div>
-
-            <div id="historyList" class="history-content-wrapper">
-                <p style="text-align:center; color:#888; margin-top:20px;">ยังไม่มีข้อมูลผู้โชคดี</p>
+            <div id="historyList" class="history-body">
+                <p style="text-align:center; color:#888;">ยังไม่มีผู้ได้รับรางวัล</p>
             </div>
         </div>
     </div>
 
-    <script src="effects.js"></script> 
-    <script type="module" src="script.js"></script>
-
+    <script src="script.js"></script>
 </body>
 </html>
-
-
-
-
-
-
