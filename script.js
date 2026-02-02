@@ -268,14 +268,16 @@ function triggerWish() {
     // ============================================
     //  🚀 เพิ่มส่วนนี้: ส่งข้อมูลไป Google Sheet
     // ============================================
-    if (GOOGLE_SCRIPT_URL) {
-        // 1. แปลงข้อมูลให้เป็น Format ที่ Google Script อ่านรู้เรื่อง (id, name, dept)
+    // --- เริ่มส่วนส่งข้อมูลลง Google Sheet ---
+    if (typeof GOOGLE_SCRIPT_URL !== 'undefined' && GOOGLE_SCRIPT_URL) {
+
+        // แปลงข้อมูลให้เป็น id, name, dept ตามที่ Google Script รอรับ
         const formattedWinners = winners.map(w => {
             const keys = Object.keys(w).filter(k => k !== '_id');
             return {
-                id: w._id || w[keys[0]] || "-",   // หยิบ ID
-                name: keys.length > 1 ? w[keys[1]] : w[keys[0]], // หยิบชื่อ
-                dept: keys.length > 2 ? w[keys[2]] : "-" // หยิบสังกัด (ถ้ามี)
+                id: w._id || w[keys[0]] || "-",   
+                name: keys.length > 1 ? w[keys[1]] : w[keys[0]], 
+                dept: keys.length > 2 ? w[keys[2]] : "-" 
             };
         });
 
@@ -590,6 +592,7 @@ function resetGame() {
         window.location.reload();
     }, 500);
 }
+
 
 
 
