@@ -130,4 +130,22 @@ window.stopMeteorShower = function() {
     document.querySelectorAll('.bg-planet').forEach(el => el.classList.remove('planet-warp'));
 }
 
+/* =========================================
+   RANDOM PLANET LOADER (สุ่มดาวโหลดหน้าเว็บ)
+   ========================================= */
+document.addEventListener("DOMContentLoaded", () => {
+    // 1. รายชื่อ class ดาวที่เราทำไว้ใน CSS
+    const planetClasses = ['planet-saturn', 'planet-ice', 'planet-magma', 'planet-cyber'];
+    
+    // 2. สุ่มมา 1 อัน
+    const randomClass = planetClasses[Math.floor(Math.random() * planetClasses.length)];
+    
+    // 3. ใส่เข้าไปในตัว Loading
+    const planetEl = document.querySelector('.planet-spinner .planet');
+    if(planetEl) {
+        planetEl.classList.add(randomClass);
+    }
+});
+
 window.initStars = function() { };
+
