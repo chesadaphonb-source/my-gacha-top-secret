@@ -8,13 +8,58 @@
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 
-    <style>
+<style>
         @keyframes pulse {
             0% { transform: scale(1); opacity: 1; }
             50% { transform: scale(0.98); opacity: 0.8; }
             100% { transform: scale(1); opacity: 1; }
         }
-    </style>
+
+        /* 👇👇👇 เพิ่มส่วนนี้เข้าไปครับ เพื่อให้ดาวตกวิ่ง 👇👇👇 */
+        #meteor {
+            position: fixed;
+            top: -100px;
+            right: -100px;
+            width: 300px;  /* ปรับขนาดตามรูปดาวตกของคุณ */
+            height: 300px;
+            background: url('path/to/your-meteor.png') no-repeat center center; /* อย่าลืมใส่รูป หรือใช้ CSS วาด */
+            background-size: contain;
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 0;
+            transform: rotate(45deg); /* เอียงให้สมจริง */
+        }
+
+        .meteor-falling {
+            animation: meteorFall 2s ease-in-out forwards;
+        }
+
+        @keyframes meteorFall {
+            0% {
+                top: -100px;
+                right: -100px;
+                opacity: 1;
+                transform: scale(0.5) rotate(45deg);
+            }
+            100% {
+                top: 120%;   /* วิ่งเลยจอล่าง */
+                right: 120%; /* วิ่งเลยจอซ้าย */
+                opacity: 1;
+                transform: scale(1.5) rotate(45deg);
+            }
+        }
+        
+        #flashOverlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: white;
+            z-index: 9998;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease-out;
+        }
+        /* 👆👆👆 จบส่วนที่เพิ่ม 👆👆👆 */
+</style>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -88,5 +133,6 @@
     <script src="script.js"></script>
 </body>
 </html>
+
 
 
