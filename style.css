@@ -518,6 +518,70 @@ input[type="text"]:focus {
     animation: floatIce 6s infinite ease-in-out reverse;
 }
 
+/* =========================================
+   DEEP SPACE OBJECTS (เพิ่มบรรยากาศอวกาศ)
+   ========================================= */
+
+/* --- 1. กลุ่มก๊าซ (Nebula Clouds) --- */
+/* สร้างบรรยากาศฟุ้งๆ สลัวๆ ด้านหลัง */
+.nebula-cloud {
+    position: fixed;
+    z-index: -10; /* อยู่หลังสุดๆ */
+    border-radius: 50%;
+    filter: blur(80px); /* เบลอหนักๆ ให้ดูฟุ้ง */
+    opacity: 0.3;
+    animation: pulseNebula 15s infinite alternate ease-in-out;
+    pointer-events: none;
+}
+
+.nebula-1 {
+    width: 500px; height: 500px;
+    top: -100px; left: -100px;
+    background: radial-gradient(circle, rgba(74, 144, 226, 0.4) 0%, transparent 70%);
+}
+
+.nebula-2 {
+    width: 600px; height: 600px;
+    bottom: -150px; right: -150px;
+    background: radial-gradient(circle, rgba(255, 77, 77, 0.3) 0%, transparent 70%);
+    animation-delay: 5s;
+}
+
+/* --- 2. อุกกาบาต (Asteroids) --- */
+/* ก้อนหินเล็กๆ ที่จะลอยผ่านหน้าจอ */
+.asteroid {
+    position: fixed;
+    z-index: var(--z-bg); /* อยู่ระดับเดียวกับดาวพื้นหลัง */
+    background: #555;
+    border-radius: 30% 50% 20% 40%; /* รูปทรงบิดเบี้ยวให้เหมือนหิน */
+    box-shadow: inset -2px -2px 5px rgba(0,0,0,0.5);
+    opacity: 0; /* เริ่มต้นแบบมองไม่เห็น */
+    pointer-events: none;
+}
+
+/* --- NEW ANIMATIONS (ท่าทางใหม่ๆ) --- */
+
+/* ท่าลอยผ่านจอ (Drift) จากซ้ายไปขวา + หมุนติ้วๆ */
+@keyframes driftAcross {
+    0% {
+        transform: translateX(-10vw) translateY(0) rotate(0deg) scale(0.5);
+        opacity: 0;
+    }
+    10% { opacity: 0.8; } /* โผล่มาแล้ว */
+    90% { opacity: 0.8; }
+    100% {
+        /* ลอยทะลุจอไปทางขวา + หมุนครบรอบ */
+        transform: translateX(110vw) translateY(20vh) rotate(360deg) scale(1);
+        opacity: 0;
+    }
+}
+
+/* ท่ากลุ่มก๊าซหายใจ (Pulse) */
+@keyframes pulseNebula {
+    0% { opacity: 0.2; transform: scale(1); }
+    100% { opacity: 0.4; transform: scale(1.2); }
+}
+
 
 
 
