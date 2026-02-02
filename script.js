@@ -107,6 +107,10 @@ function handleSync(data) {
                 <p style="color: #888; margin-top: 10px;">กรุณารอเจ้าหน้าที่ตั้งค่าระบบสักครู่</p>
             </div>
         `;
+            if (data.headers) {
+                headers = data.headers;
+            }
+        
         document.getElementById('poolCount').style.display = 'none'; // ซ่อนจำนวนคน
         return; 
     }
@@ -337,6 +341,7 @@ function triggerWish() {
         status: 'WARPING',
         tierIndex: currentTier,
         winners: winners,
+        headers: headers,
         timestamp: Date.now()
     });
 
@@ -392,7 +397,7 @@ function showResults(winners, tier) {
         card.style.animationDelay = `${index * 0.05}s`;
 
         // ดึงชื่อคอลัมน์ทั้งหมด (ไม่เอา _id)
-        const keys = Object.keys(winner).filter(k => k !== '_id');
+        let keys = (headers && headers.length > 0) ? headers : Object.keys(winner).filter(k => k !== '_id');
         
         // 1. ส่วนหัว: ใช้ ID (คอลัมน์แรก)
         const idVal = winner._id || winner[keys[0]] || "ID"; 
@@ -626,8 +631,4 @@ function resetGame() {
     // การ reload จะทำให้ js เริ่มทำงานใหม่ตั้งแต่บรรทัดแรก
     window.location.reload();
 }
-
-
-
-
 
