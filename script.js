@@ -46,6 +46,9 @@ if (urlParams.get('role') === 'admin') {
 
 window.onload = function() {
     console.log("System Start. Role:", isAdmin ? "ADMIN" : "AUDIENCE");
+    prizes.forEach(p => {
+        if (!winnersHistory[p.name]) winnersHistory[p.name] = [];
+    });
 
     if (isAdmin) {
         // Admin: แสดงปุ่ม Setup
@@ -58,12 +61,18 @@ window.onload = function() {
         document.getElementById('mainScreen').style.display = 'block'; // โชว์หน้าจอรอเลย
         document.getElementById('poolCount').innerText = "Ready for the show...";
         
-        // ฟังค่าจาก Firebase
+        // 1. ฟัง Game State (เพื่อเล่น Animation)
         db.ref('gameState').on('value', (snapshot) => {
             const data = snapshot.val();
             if (data) handleSync(data);
-                winnersHistory = data;
-                console.log("Sync History เรียบร้อย");
+        });
+
+        // 2. ฟัง History (เพื่อให้เปิดดู Hall of Fame ได้) *** สำคัญมาก ***
+        db.ref('history').on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                winnersHistory = data; 
+                console.log("History updated from Firebase");
         });
     }
 };
@@ -451,4 +460,5 @@ function animate() {
     requestAnimationFrame(animate);
 }
 animate();
+
 
